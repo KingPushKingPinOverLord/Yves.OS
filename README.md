@@ -36,6 +36,8 @@ Flappy Break Time: A fully playable Flappy Bird clone.
 
 Terminal & Easter Eggs: A functional command line. Type help to explore, or try hidden commands like matrix or lucy for ASCII art surprises.
 
+I would love to add more games, maybe a boomer-shooter like doom. Maybe even include my own Cubing timer which saves the times and stuff And I will definitely include more easter eggs in the terminal.
+
 How to run it locally
 
 I wanted to keep this project completely self-contained. There are no build tools, no Node.js dependencies, and no package managers required.
