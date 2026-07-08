@@ -3,314 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yves.OS - Dark Pastel</title>
+    <title>Yves.OS - Editorial</title>
     
-    <!-- High-end Brutalist Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Editorial Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Epilogue:wght@500;700;900&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* Unique Dark Pastel Palette: Twilight Matcha & Abyssal Pearl */
-            --os-bg: #1a1b20;       /* Deep warm slate */
-            --panel-bg: #22242b;    /* Slightly lighter slate for panels */
-            --os-accent: #e5a494;   /* Soft dusty peach/coral */
+            /* Midnight Taro & Sand - Unique Dark Pastel Palette */
+            --os-bg: #1a181d;          /* Deep plum-slate */
+            --panel-bg: #232027;       /* Slightly elevated panel */
+            --os-accent: #e0d2b4;      /* Pastel Sand / Gold */
+            --os-accent-alt: #98a69e;  /* Muted Sage */
+            --os-accent-hot: #c99a9a;  /* Dusty Lilac/Pink */
             
-            /* Hard edges, softer contrast */
-            --panel-border: 2px solid #3d424d;
-            --panel-shadow: 8px 8px 0px #0b0c0f; /* Deep charcoal, not pure black */
+            /* Harsh, Editorial Borders */
+            --panel-border: 2px solid #48434d;
+            --border-light: 1px solid #36323b;
+            --panel-shadow: 6px 6px 0px rgba(10, 9, 12, 0.6);
             
-            --text-primary: #d5d8de;
-            --text-secondary: #7e8696;
-            
-            /* Softened macOS controls */
-            --mac-red: #d97d7d;
-            --mac-yellow: #d9b87d;
-            --mac-green: #8abf88;
-            
-            /* Aura Physics Colors - Dusty Pastels */
-            --blob-1-color: #e5a494; /* Peach */
-            --blob-2-color: #8c9fb3; /* Slate Blue */
-            --blob-3-color: #aa94b8; /* Mauve */
-            --blob-4-color: #9ab396; /* Sage */
-            --blob-5-color: #c499a2; /* Dusty Rose */
-            --ascii-color: #d9b87d;
+            --text-primary: #e8e5e1;
+            --text-secondary: #9c969e;
+            --text-inverse: #1a181d;
 
-            --font-ui: 'Space Grotesk', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            /* Aura Colors (Muted) */
+            --blob-1-color: #e0d2b4; 
+            --blob-2-color: #98a69e; 
+            --blob-3-color: #c99a9a; 
+            --blob-4-color: #8a96a3; 
+            --blob-5-color: #b5a4b8; 
+
+            /* Typography */
+            --font-head: 'Epilogue', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-drag: none; }
 
+        ::selection { background: var(--os-accent); color: var(--text-inverse); }
+
         body, html {
             width: 100%; height: 100%; overflow: hidden;
-            font-family: var(--font-ui); color: var(--text-primary);
+            font-family: var(--font-body); color: var(--text-primary);
             background-color: var(--os-bg);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Custom Sharp Scrollbar */
-        ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-track { background: var(--panel-bg); border-left: 2px solid var(--panel-border); }
-        ::-webkit-scrollbar-thumb { background: var(--text-secondary); border: 2px solid var(--panel-bg); }
+        /* Blocky Scrollbar */
+        ::-webkit-scrollbar { width: 12px; height: 12px; }
+        ::-webkit-scrollbar-track { background: var(--panel-bg); border-left: var(--panel-border); }
+        ::-webkit-scrollbar-thumb { background: var(--text-secondary); }
         ::-webkit-scrollbar-thumb:hover { background: var(--os-accent); }
 
-        .bg-container {
-            position: absolute; inset: 0; z-index: 0; overflow: hidden;
-            background: var(--os-bg);
-        }
-
+        /* Background Engine */
+        .bg-container { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--os-bg); }
+        
         #blob-canvas { 
             position: absolute; inset: 0; z-index: 0; 
-            transition: opacity 0.4s ease;
+            transition: opacity 0.3s ease;
         }
 
-        .grid-overlay {
-            position: absolute; inset: 0;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 1; pointer-events: none;
+        .dot-matrix {
+            position: absolute; inset: 0; z-index: 1; pointer-events: none;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 24px 24px;
         }
 
+        /* ASCII Background Container */
         #bg-ascii-container {
             position: absolute; inset: 0; z-index: 1; display: none;
             justify-content: center; align-items: center;
             font-family: var(--font-mono); white-space: pre; line-height: 1.1; overflow: hidden;
             opacity: 0; transition: opacity 0.5s ease, color 0.3s ease;
-            text-shadow: 4px 4px 0px #0b0c0f;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
             font-size: min(0.7vw, 1.2vh); 
             pointer-events: none;
+            color: var(--os-accent);
         }
 
-        /* Core Brutalist Panel Design */
-        .brutal-panel {
-            background: var(--panel-bg);
-            border: var(--panel-border);
-            box-shadow: var(--panel-shadow);
-            border-radius: 0px;
-        }
-
+        /* Top Bar - Editorial Marquee Style */
         .top-bar {
-            height: 44px; width: 100%; position: absolute; top: 0; left: 0;
+            height: 36px; width: 100%; position: absolute; top: 0; left: 0;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; z-index: 9999; font-size: 13px; font-weight: 700;
+            padding: 0 16px; z-index: 9999;
             background: var(--os-bg); border-bottom: var(--panel-border);
-            font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 4px 0 rgba(11,12,15,0.5);
+            font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-transform: uppercase;
         }
 
-        .top-bar-left, .top-bar-right { display: flex; align-items: center; gap: 24px; }
+        .top-bar-left, .top-bar-right { display: flex; align-items: center; gap: 20px; }
 
-        .menu-item {
-            cursor: pointer; display: flex; align-items: center; gap: 10px;
-            transition: color 0.1s ease;
+        .marquee-container {
+            flex: 1; overflow: hidden; white-space: nowrap; margin: 0 24px;
+            color: var(--text-secondary); opacity: 0.7; font-size: 11px; letter-spacing: 1px;
         }
+        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .menu-item { cursor: pointer; display: flex; align-items: center; gap: 8px; transition: color 0.15s ease; letter-spacing: 0.5px;}
         .menu-item:hover { color: var(--os-accent); }
-        .menu-icon-svg { width: 18px; height: 18px; fill: none; stroke: var(--os-accent); stroke-width: 2.5; stroke-linecap: square; }
-        
-        .desktop-bg-widget { position: absolute; z-index: 2; pointer-events: none; transition: all 0.5s ease; }
-        .desktop-bg-widget.pos-center { top: 45%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-        .desktop-bg-widget.pos-top-left { top: 12%; left: 5%; transform: none; text-align: left; }
-        .desktop-bg-widget.pos-top-right { top: 12%; left: auto; right: 5%; transform: none; text-align: right; }
 
-        .nothing-clock { font-family: var(--font-mono); font-size: clamp(60px, 8vw, 120px); line-height: 1; color: var(--text-primary); letter-spacing: -4px; text-shadow: 6px 6px 0px var(--panel-bg); font-weight: 800; }
-        .nothing-clock span { color: var(--os-accent); transition: color 0.3s ease;}
-        .nothing-date { font-family: var(--font-mono); font-size: 15px; letter-spacing: 2px; color: var(--os-bg); margin-top: 16px; text-transform: uppercase; font-weight: 800; background: var(--os-accent); display: inline-block; padding: 6px 12px; border: 2px solid var(--os-bg); box-shadow: 4px 4px 0px var(--panel-bg);}
+        /* Giant Editorial Clock */
+        .desktop-bg-widget { position: absolute; z-index: 2; pointer-events: none; transition: all 0.5s ease; }
+        .desktop-bg-widget.pos-top-left { top: 12%; left: 6%; transform: none; text-align: left; }
+        
+        .nothing-clock { 
+            font-family: var(--font-head); font-size: clamp(80px, 12vw, 180px); line-height: 0.85; 
+            color: var(--text-primary); letter-spacing: -4px; font-weight: 900;
+        }
+        .nothing-date { 
+            font-family: var(--font-mono); font-size: 14px; letter-spacing: 2px; color: var(--os-bg); 
+            margin-top: 16px; text-transform: uppercase; font-weight: 600; background: var(--os-accent); 
+            display: inline-block; padding: 6px 12px;
+        }
 
         /* Spotlight Search */
         #spotlight-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(26, 27, 32, 0.85);
-            z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+            display: none; position: fixed; inset: 0; background: rgba(26, 24, 29, 0.9);
+            z-index: 10000; align-items: center; justify-content: center;
         }
         .spotlight-box {
-            width: 600px; max-width: 90%; background: var(--panel-bg); border: 2px solid var(--os-accent);
-            box-shadow: var(--panel-shadow); display: flex; flex-direction: column; padding: 8px;
-            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 640px; max-width: 90%; background: var(--panel-bg); border: 2px solid var(--text-primary);
+            box-shadow: var(--panel-shadow); display: flex; flex-direction: column;
+            animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes popIn { 0% { transform: scale(0.95); opacity: 0;} 100% { transform: scale(1); opacity: 1;} }
+        @keyframes slideDown { 0% { transform: translateY(-20px); opacity: 0;} 100% { transform: translateY(0); opacity: 1;} }
+        
+        .spotlight-label {
+            font-family: var(--font-mono); font-size: 11px; padding: 8px 16px; 
+            background: var(--text-primary); color: var(--os-bg); text-transform: uppercase; font-weight: 600;
+        }
         #spotlight-input {
-            width: 100%; padding: 20px; font-size: 20px; font-family: var(--font-mono); font-weight: 700;
+            width: 100%; padding: 24px; font-size: 24px; font-family: var(--font-head); font-weight: 700;
             background: transparent; border: none; color: var(--text-primary); outline: none; caret-color: var(--os-accent);
         }
-        #spotlight-input::placeholder { color: var(--text-secondary); }
+        #spotlight-input::placeholder { color: var(--text-secondary); opacity: 0.5; font-weight: 500;}
 
+        /* Blocky Text Dock */
         .dock-container {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            padding: 12px 16px; display: flex; align-items: center; gap: 16px; z-index: 9999;
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 0px; z-index: 9999;
+            background: var(--panel-bg); border: var(--panel-border); box-shadow: var(--panel-shadow);
         }
-        .dock-item { width: 54px; height: 54px; cursor: pointer; transition: transform 0.1s ease; position: relative; }
-        .dock-item:hover { transform: translateY(-4px); z-index: 2; }
-        
-        .dock-icon-wrapper {
-            width: 100%; height: 100%; background: var(--os-bg);
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid var(--text-secondary); border-radius: 0;
-            transition: all 0.1s ease;
+        .dock-item {
+            padding: 12px 20px; cursor: pointer; transition: all 0.1s ease;
+            font-family: var(--font-head); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-secondary); border-right: var(--panel-border);
+            display: flex; align-items: center; gap: 8px;
         }
-        .dock-item:hover .dock-icon-wrapper { border-color: var(--os-accent); background: var(--os-accent); box-shadow: 4px 4px 0px var(--panel-bg); }
-        .dock-icon-wrapper svg { width: 24px; height: 24px; fill: none; stroke: var(--text-primary); stroke-width: 2.5; stroke-linecap: square; transition: all 0.1s ease; }
-        .dock-item:hover .dock-icon-wrapper svg { stroke: var(--os-bg); }
+        .dock-item:last-child { border-right: none; }
+        .dock-item:hover { background: var(--text-primary); color: var(--os-bg); }
+        .dock-item.active { color: var(--os-accent); }
+        .dock-item:hover.active { color: var(--os-bg); }
 
-        .dock-indicator { width: 6px; height: 6px; background: var(--os-accent); border: 1px solid var(--os-bg); position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); display: none; }
-        .dock-item.active .dock-indicator { display: block; }
-
+        /* Window & Window State Management */
         .window {
             position: absolute; display: flex; flex-direction: column;
-            overflow: hidden; min-width: 320px; min-height: 200px; z-index: 100;
-            transition: opacity 0.2s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), top 0.25s, left 0.25s, width 0.25s, height 0.25s;
-            transform-origin: center center;
+            overflow: hidden; min-width: 400px; min-height: 250px; z-index: 100;
+            background: var(--panel-bg); border: var(--panel-border); box-shadow: var(--panel-shadow);
+            transition: opacity 0.2s, transform 0.2s, top 0.2s, left 0.2s, width 0.2s, height 0.2s;
         }
         .window.dragging { transition: none !important; }
-        .window.maximized { border: none !important; box-shadow: none !important; }
         
         .window.focused {
-            border-color: var(--os-accent);
+            border-color: var(--text-primary);
             z-index: 1000 !important;
-            box-shadow: 12px 12px 0px var(--panel-bg);
         }
 
+        /* Editorial Window Header */
         .window-header {
-            height: 40px; display: flex; align-items: center; justify-content: center;
-            padding: 0 16px; cursor: move; border-bottom: 2px solid var(--text-secondary); position: relative; background: var(--os-bg);
-            transition: background 0.2s, border-color 0.2s;
+            height: 44px; display: flex; align-items: stretch; justify-content: space-between;
+            cursor: move; border-bottom: var(--panel-border); background: var(--os-bg);
+            transition: background 0.2s;
         }
-        .window.focused .window-header { background: var(--os-accent); border-bottom-color: var(--os-bg);}
-        .window.focused .window-content { border-top-color: var(--os-accent); }
+        .window.focused .window-header { background: var(--panel-bg); }
+        
+        .window-title { 
+            font-family: var(--font-head); font-size: 14px; font-weight: 700; text-transform: uppercase; 
+            letter-spacing: 1px; padding: 0 16px; display: flex; align-items: center; color: var(--text-primary);
+            border-right: var(--panel-border);
+        }
+        .window-title-meta {
+            font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); 
+            display: flex; align-items: center; padding: 0 16px; flex: 1; text-transform: uppercase;
+        }
 
-        .mac-controls { position: absolute; left: 16px; display: flex; gap: 8px; }
-        .mac-btn {
-            width: 14px; height: 14px; border: 2px solid var(--text-secondary); background: transparent;
+        .editorial-controls { display: flex; }
+        .ed-btn {
+            width: 44px; background: transparent; border-left: var(--panel-border); color: var(--text-secondary);
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: transform 0.1s ease, border-color 0.2s;
+            font-family: var(--font-mono); font-size: 14px; font-weight: 600; transition: all 0.1s;
         }
-        .window.focused .mac-btn { border-color: var(--os-bg); }
-        .mac-btn:hover { transform: scale(1.1); background: var(--os-bg); border-color: var(--os-bg) !important; }
+        .ed-btn:hover { background: var(--text-primary); color: var(--os-bg); }
+        .ed-btn.close:hover { background: var(--os-accent); color: var(--os-bg); }
         
-        .window-title { font-family: var(--font-mono); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; pointer-events: none; display: flex; align-items: center; gap: 8px; color: var(--text-primary);}
-        .window.focused .window-title { color: var(--os-bg); }
-        .window-title svg { width: 14px; height: 14px; stroke: var(--text-primary); }
-        .window.focused .window-title svg { stroke: var(--os-bg); }
-        
-        .window-content { flex: 1; position: relative; overflow: auto; display: flex; flex-direction: column; background: var(--panel-bg); }
+        .window-content { flex: 1; position: relative; overflow: auto; display: flex; flex-direction: column; background: var(--os-bg); }
 
-        /* Universal App Button */
-        .app-btn { background: var(--text-primary); color: var(--os-bg); border: 2px solid var(--os-bg); padding: 10px 20px; cursor: pointer; font-family: var(--font-mono); font-weight: 800; font-size: 13px; text-transform: uppercase; transition: all 0.1s; box-shadow: 4px 4px 0 var(--os-accent);}
-        .app-btn:hover { background: var(--os-accent); box-shadow: 2px 2px 0 var(--os-bg); transform: translate(2px, 2px); }
-        .app-btn:active { box-shadow: 0 0 0 var(--os-bg); transform: translate(4px, 4px); }
+        /* Universal Flat Button */
+        .app-btn { 
+            background: transparent; color: var(--text-primary); border: var(--panel-border); 
+            padding: 10px 24px; cursor: pointer; font-family: var(--font-head); font-weight: 700; font-size: 13px; 
+            text-transform: uppercase; letter-spacing: 1px; transition: all 0.1s;
+        }
+        .app-btn:hover { background: var(--text-primary); color: var(--os-bg); }
 
-        /* Sticky Notes */
+        /* Sticky Notes - Annotation Style */
         .sticky-note {
-            position: absolute; width: 240px; min-height: 240px; background: var(--panel-bg); border: 2px solid var(--os-bg);
-            box-shadow: 8px 8px 0px var(--os-accent); z-index: 50; display: flex; flex-direction: column;
-            color: var(--text-primary); font-family: var(--font-mono);
-            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: absolute; width: 280px; min-height: 200px; background: var(--os-accent); 
+            border: 2px solid var(--text-inverse); box-shadow: 4px 4px 0px var(--text-inverse); 
+            z-index: 50; display: flex; flex-direction: column; color: var(--text-inverse); 
+            animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .sticky-header { height: 28px; background: var(--os-accent); cursor: move; border-bottom: 2px solid var(--os-bg); display: flex; justify-content: flex-end; padding: 0 8px; align-items: center;}
-        .sticky-close { cursor: pointer; font-weight: bold; font-size: 16px; color: var(--os-bg); transition: transform 0.1s;}
-        .sticky-close:hover { transform: scale(1.2); }
-        .sticky-content { flex: 1; padding: 16px; outline: none; font-size: 14px; line-height: 1.6; overflow-y: auto; font-weight: 500;}
+        .sticky-header { 
+            height: 32px; border-bottom: 2px solid var(--text-inverse); cursor: move; 
+            display: flex; justify-content: space-between; align-items: center; padding: 0 12px;
+            font-family: var(--font-mono); font-size: 11px; font-weight: 600; text-transform: uppercase;
+        }
+        .sticky-close { cursor: pointer; font-size: 14px; }
+        .sticky-content { flex: 1; padding: 16px; outline: none; font-size: 15px; font-family: var(--font-body); line-height: 1.5; overflow-y: auto;}
 
-        h1, h2, h3 { font-family: var(--font-ui); font-weight: 700; text-transform: uppercase;}
-
-        /* About Me App */
-        .me-app { padding: 40px; display: flex; gap: 32px; height: 100%; align-items: flex-start; }
-        .me-avatar { width: 120px; height: 120px; background: var(--os-bg); border: 2px solid var(--os-accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 6px 6px 0px var(--os-accent); }
-        .me-avatar svg { width: 64px; height: 64px; stroke: var(--text-primary); }
-        .me-details { display: flex; flex-direction: column; gap: 16px; }
-        .me-details h1 { font-size: 42px; color: var(--text-primary); line-height: 1; letter-spacing: -1px;}
-        .me-details h3 { font-family: var(--font-mono); font-size: 14px; color: var(--os-accent); letter-spacing: 2px; }
-        .me-details p { font-size: 15px; color: var(--text-secondary); line-height: 1.6; font-family: var(--font-mono);}
-
-        /* Dashboard App */
-        .dash-app { padding: 40px; display: flex; flex-direction: column; gap: 32px; height: 100%; }
-        .dash-header h1 { font-size: 36px; color: var(--text-primary); letter-spacing: -1px;}
-        .dash-header p { font-size: 15px; color: var(--text-secondary); font-family: var(--font-mono); margin-top: 8px;}
-        .dash-focus-box { background: var(--os-bg); border: 2px solid var(--text-secondary); padding: 24px; border-left: 6px solid var(--os-accent); box-shadow: 6px 6px 0px var(--panel-shadow);}
-        .dash-focus-box h3 { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; font-family: var(--font-mono); }
-        .dash-input { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--panel-border); color: var(--text-primary); font-size: 24px; padding: 8px 0; outline: none; transition: border-color 0.1s ease; font-family: var(--font-ui); font-weight: 600;}
-        .dash-input:focus { border-color: var(--os-accent); }
+        /* --- App Specific Styles --- */
         
+        /* About Me - Artist Profile */
+        .me-app { padding: 48px; display: flex; flex-direction: column; gap: 32px; height: 100%; max-width: 800px; margin: 0 auto; }
+        .me-meta-tag { font-family: var(--font-mono); font-size: 12px; color: var(--os-accent); text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--os-accent); padding: 4px 8px; width: max-content;}
+        .me-details h1 { font-family: var(--font-head); font-size: 56px; color: var(--text-primary); line-height: 1; letter-spacing: -2px; margin-bottom: 16px; text-transform: uppercase;}
+        .me-details p { font-size: 18px; color: var(--text-secondary); line-height: 1.6; max-width: 600px;}
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 24px; padding-top: 24px; border-top: var(--border-light); }
+        .stat-box { display: flex; flex-direction: column; gap: 8px; }
+        .stat-val { font-family: var(--font-mono); font-size: 24px; color: var(--text-primary); }
+        .stat-lbl { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); text-transform: uppercase; }
+
+        /* Dashboard - Command Center */
+        .dash-app { padding: 48px; display: flex; flex-direction: column; gap: 40px; height: 100%; max-width: 900px; margin: 0 auto; width: 100%;}
+        .dash-header h1 { font-family: var(--font-head); font-size: 48px; color: var(--text-primary); letter-spacing: -1px; text-transform: uppercase;}
+        .dash-focus-box { background: var(--panel-bg); border: var(--panel-border); padding: 32px; position: relative;}
+        .dash-focus-tag { position: absolute; top: -10px; left: 24px; background: var(--os-accent); color: var(--os-bg); font-family: var(--font-mono); font-size: 11px; padding: 2px 8px; font-weight: 600; text-transform: uppercase;}
+        .dash-input { width: 100%; background: transparent; border: none; color: var(--text-primary); font-size: 32px; font-family: var(--font-head); font-weight: 700; outline: none; margin-top: 8px;}
+        .dash-input::placeholder { color: #48434d; }
+
         /* Terminal App */
-        .terminal-app { padding: 24px; font-family: var(--font-mono); font-size: 14px; color: var(--text-primary); height: 100%; overflow-y: auto; background: var(--os-bg); }
-        .term-line { margin-bottom: 8px; line-height: 1.5; white-space: pre-wrap; word-break: break-all;}
-        .term-prompt { color: var(--os-accent); margin-right: 8px; font-weight: bold; }
-        .ascii-art { white-space: pre; font-family: var(--font-mono); line-height: 1.2; margin: 12px 0; font-size: 12px; letter-spacing: 2px; text-shadow: 2px 2px 0px var(--panel-bg); }
+        .terminal-app { padding: 32px; font-family: var(--font-mono); font-size: 14px; color: var(--text-primary); height: 100%; overflow-y: auto; background: var(--os-bg); }
+        .term-line { margin-bottom: 8px; line-height: 1.6; white-space: pre-wrap; word-break: break-all;}
+        .term-prompt { color: var(--os-accent); margin-right: 12px; }
         
         /* Focus Timer App */
-        .focus-app { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; background: repeating-linear-gradient(45deg, var(--panel-bg), var(--panel-bg) 10px, var(--os-bg) 10px, var(--os-bg) 20px);}
-        .timer-display { font-family: var(--font-mono); font-weight: 800; font-size: 100px; color: var(--text-primary); line-height: 1; margin-bottom: 40px; letter-spacing: -4px; text-shadow: 6px 6px 0px var(--os-accent); }
-        .timer-controls { display: flex; gap: 20px; }
+        .focus-app { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 24px; background: var(--os-bg);}
+        .timer-tag { font-family: var(--font-mono); color: var(--os-accent-hot); font-size: 14px; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 24px;}
+        .timer-display { font-family: var(--font-head); font-weight: 900; font-size: clamp(80px, 15vw, 160px); color: var(--text-primary); line-height: 1; margin-bottom: 48px; letter-spacing: -4px; }
         
-        /* Workspace App */
-        .notion-app { display: flex; height: 100%; color: var(--text-primary); background: var(--panel-bg); }
-        .notion-sidebar { width: 220px; background: var(--os-bg); border-right: 2px solid var(--text-secondary); display: flex; flex-direction: column; padding-top: 24px;}
-        .notion-sidebar-header { padding: 0 20px 20px 20px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
-        .notion-add-btn { cursor: pointer; font-size: 20px; line-height: 1; transition: color 0.1s; }
+        /* Workspace App - Lyrics/Annotation Style */
+        .notion-app { display: flex; height: 100%; background: var(--os-bg); }
+        .notion-sidebar { width: 260px; border-right: var(--panel-border); display: flex; flex-direction: column; background: var(--panel-bg);}
+        .notion-sidebar-header { padding: 20px; font-family: var(--font-head); font-weight: 700; font-size: 14px; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; border-bottom: var(--border-light); }
+        .notion-add-btn { cursor: pointer; font-size: 18px; line-height: 1; }
         .notion-add-btn:hover { color: var(--os-accent); }
-        .notion-page-list { flex: 1; overflow-y: auto; padding: 0 12px; }
-        .notion-page-item { padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-family: var(--font-ui); font-weight: 600; font-size: 14px; color: var(--text-secondary); transition: all 0.1s; margin-bottom: 8px; border: 2px solid transparent;}
-        .notion-page-item:hover { border-color: var(--panel-border); color: var(--text-primary);}
-        .notion-page-item.active { background: var(--text-primary); color: var(--os-bg); border-color: var(--text-primary); box-shadow: 4px 4px 0px var(--os-accent);}
+        .notion-page-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .notion-page-item { padding: 16px 20px; cursor: pointer; font-family: var(--font-body); font-weight: 500; font-size: 14px; color: var(--text-secondary); transition: all 0.1s; border-bottom: var(--border-light); display: flex; justify-content: space-between; align-items: center;}
+        .notion-page-item:hover { background: rgba(255,255,255,0.03); color: var(--text-primary);}
+        .notion-page-item.active { background: var(--text-primary); color: var(--os-bg); border-left: 4px solid var(--os-accent); }
         
-        .notion-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
-        .notion-cover { height: 100px; background: repeating-linear-gradient(45deg, var(--os-bg), var(--os-bg) 10px, var(--panel-bg) 10px, var(--panel-bg) 20px); border-bottom: 4px solid var(--os-accent);}
-        .notion-icon-picker { font-size: 40px; position: absolute; bottom: -20px; left: 40px; cursor: pointer; background: var(--text-primary); border: 2px solid var(--os-bg); width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; box-shadow: 4px 4px 0 var(--os-accent);}
-        .notion-content-wrapper { padding: 60px 40px 40px 40px; flex: 1; display: flex; flex-direction: column; max-width: 800px; margin: 0 auto; width: 100%;}
-        .notion-title-input { font-size: 42px; font-weight: 800; background: transparent; border: none; color: var(--text-primary); outline: none; font-family: var(--font-ui); margin-bottom: 32px; letter-spacing: -1px; text-transform: uppercase;}
-        .notion-title-input::placeholder { color: var(--text-secondary); }
+        .notion-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 48px; max-width: 800px; margin: 0 auto; width: 100%; }
+        .notion-meta { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 1px; display: flex; gap: 16px;}
+        .notion-title-input { font-size: 48px; font-weight: 900; background: transparent; border: none; color: var(--text-primary); outline: none; font-family: var(--font-head); margin-bottom: 40px; letter-spacing: -1px; text-transform: uppercase;}
+        .notion-title-input::placeholder { color: #48434d; }
         
-        .notion-toolbar { display: flex; gap: 8px; margin-bottom: 32px; position: sticky; top: 0; background: var(--panel-bg); padding: 12px 0; z-index: 10; border-bottom: 2px solid var(--text-secondary); }
-        .notion-tool-btn { background: var(--os-bg); border: 2px solid var(--text-secondary); color: var(--text-primary); padding: 8px 12px; cursor: pointer; font-family: var(--font-mono); font-size: 13px; font-weight: 700; transition: all 0.1s; text-transform: uppercase;}
-        .notion-tool-btn:hover { background: var(--os-accent); border-color: var(--os-accent); color: var(--os-bg); box-shadow: 2px 2px 0 var(--os-bg);}
-        
-        .notion-editor { flex: 1; outline: none; font-family: var(--font-ui); font-size: 16px; line-height: 1.7; color: var(--text-primary); font-weight: 400;}
-        .notion-editor:empty:before { content: "Initialize data entry..."; color: var(--text-secondary); pointer-events: none; font-family: var(--font-mono); }
-        .notion-editor h1 { font-size: 32px; color: var(--text-primary); margin: 32px 0 16px 0; line-height: 1.2; text-transform: uppercase; letter-spacing: -1px;}
-        .notion-editor h2 { font-size: 24px; color: var(--text-primary); margin: 24px 0 12px 0; line-height: 1.3;}
-        .notion-editor ul { padding-left: 24px; margin-bottom: 16px; }
-        .notion-editor input[type="checkbox"] { margin-right: 12px; transform: scale(1.4); accent-color: var(--os-accent);}
+        .notion-editor { flex: 1; outline: none; font-family: var(--font-body); font-size: 18px; line-height: 1.8; color: var(--text-primary); font-weight: 400;}
+        .notion-editor:empty:before { content: "Begin transmission..."; color: #48434d; pointer-events: none; }
+        .notion-editor h1 { font-family: var(--font-head); font-size: 32px; color: var(--text-primary); margin: 40px 0 16px 0; line-height: 1.2; text-transform: uppercase; letter-spacing: -1px;}
+        .notion-editor h2 { font-family: var(--font-head); font-size: 24px; color: var(--os-accent); margin: 32px 0 12px 0; line-height: 1.3;}
+        .notion-editor ul { padding-left: 24px; margin-bottom: 24px; }
 
         /* Project Tracker App */
-        .tracker-app { padding: 40px; color: var(--text-primary); height: 100%; overflow-y: auto; }
-        .tracker-header { margin-bottom: 40px; border-bottom: 2px solid var(--text-secondary); padding-bottom: 20px;}
-        .tracker-header h3 { font-size: 28px; color: var(--text-primary); margin-bottom: 8px; letter-spacing: -1px;}
-        .tracker-header p { font-family: var(--font-mono); color: var(--os-accent); font-size: 14px; text-transform: uppercase; font-weight: 700;}
+        .tracker-app { padding: 48px; max-width: 900px; margin: 0 auto; width: 100%; height: 100%; overflow-y: auto; }
+        .tracker-header { margin-bottom: 48px; display: flex; flex-direction: column; gap: 8px;}
+        .tracker-header h3 { font-family: var(--font-head); font-size: 40px; color: var(--text-primary); letter-spacing: -1px; text-transform: uppercase;}
+        .tracker-header p { font-family: var(--font-mono); color: var(--text-secondary); font-size: 13px; text-transform: uppercase; letter-spacing: 1px;}
         
-        .proj-card { background: var(--os-bg); border: 2px solid var(--text-secondary); padding: 24px; margin-bottom: 24px; transition: border-color 0.1s ease; box-shadow: 8px 8px 0px var(--panel-shadow);}
-        .proj-card:hover { border-color: var(--os-accent); }
-        .proj-title { font-size: 20px; font-weight: 800; margin-bottom: 16px; display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: -0.5px;}
-        .proj-progress { width: 100%; height: 8px; background: var(--panel-bg); border: 1px solid var(--text-secondary); margin-bottom: 20px;}
+        .proj-card { background: transparent; border: var(--panel-border); padding: 32px; margin-bottom: 32px; position: relative;}
+        .proj-tag { position: absolute; top: -12px; left: 24px; background: var(--text-primary); color: var(--os-bg); font-family: var(--font-mono); font-size: 11px; padding: 4px 12px; font-weight: 600; text-transform: uppercase;}
+        .proj-title { font-family: var(--font-head); font-size: 24px; font-weight: 700; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase;}
+        .proj-progress { width: 100%; height: 4px; background: var(--panel-bg); margin-bottom: 24px;}
         .proj-progress-bar { height: 100%; background: var(--os-accent); transition: width 0.3s ease; }
         
-        .task-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--panel-border); cursor: pointer; font-size: 15px; font-family: var(--font-mono);}
-        .task-item:last-child { border-bottom: none; }
-        .task-item .checkbox { width: 20px; height: 20px; border: 2px solid var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: background 0.1s; background: var(--os-bg);}
-        .task-item.done .checkbox { background: var(--os-accent); border-color: var(--os-accent); }
-        .task-item.done .checkbox::after { content: '✓'; color: var(--os-bg); font-weight: bold; font-size: 14px;}
-        .task-item.done span { text-decoration: line-through; color: var(--text-secondary); }
+        .task-item { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-top: var(--border-light); cursor: pointer; font-size: 16px; font-family: var(--font-body);}
+        .task-item .checkbox { width: 20px; height: 20px; border: 2px solid var(--text-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;}
+        .task-item.done .checkbox { background: var(--text-primary); border-color: var(--text-primary); }
+        .task-item.done .checkbox::after { content: '×'; color: var(--os-bg); font-weight: bold; font-size: 14px; font-family: var(--font-mono);}
+        .task-item.done span { color: var(--text-secondary); text-decoration: line-through;}
 
-        .app-input-row { display: flex; gap: 16px; margin-bottom: 24px; }
-        .app-input { flex: 1; background: var(--os-bg); border: 2px solid var(--text-secondary); padding: 14px 16px; color: var(--text-primary); font-family: var(--font-mono); outline: none; font-size: 14px; font-weight: 600;}
+        .app-input-row { display: flex; gap: 16px; margin-top: 24px; }
+        .app-input { flex: 1; background: transparent; border: var(--panel-border); padding: 12px 16px; color: var(--text-primary); font-family: var(--font-body); outline: none; font-size: 15px;}
         .app-input:focus { border-color: var(--os-accent); }
         
         /* Settings App */
-        .settings-app { padding: 40px; color: var(--text-primary); height: 100%; overflow-y: auto; }
-        .settings-section { margin-bottom: 40px; }
-        .settings-section h2 { font-size: 16px; text-transform: uppercase; letter-spacing: 2px; color: var(--os-accent); margin-bottom: 20px; font-family: var(--font-mono); border-bottom: 2px solid var(--panel-border); padding-bottom: 12px;}
-        .settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: var(--os-bg); padding: 16px 20px; border: 2px solid var(--text-secondary); font-size: 15px; font-family: var(--font-mono); font-weight: 600;}
-        .settings-slider { -webkit-appearance: none; width: 160px; height: 8px; background: var(--panel-bg); border: 2px solid var(--text-secondary); outline: none; }
-        .settings-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 28px; background: var(--text-primary); cursor: pointer; border: 2px solid var(--os-bg); }
-        .settings-slider::-webkit-slider-thumb:hover { background: var(--os-accent); }
-        .settings-color { -webkit-appearance: none; border: none; width: 36px; height: 36px; cursor: pointer; background: transparent; padding: 0;}
+        .settings-app { padding: 48px; max-width: 800px; margin: 0 auto; width: 100%; height: 100%; overflow-y: auto; }
+        .settings-section { margin-bottom: 48px; }
+        .settings-section h2 { font-family: var(--font-head); font-size: 24px; text-transform: uppercase; color: var(--text-primary); margin-bottom: 24px; letter-spacing: -0.5px;}
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-top: var(--border-light); font-size: 15px; font-family: var(--font-mono); text-transform: uppercase;}
+        
+        .settings-color { -webkit-appearance: none; border: none; width: 40px; height: 40px; cursor: pointer; background: transparent; padding: 0;}
         .settings-color::-webkit-color-swatch-wrapper { padding: 0; }
-        .settings-color::-webkit-color-swatch { border: 2px solid var(--text-secondary); border-radius: 0; }
+        .settings-color::-webkit-color-swatch { border: var(--panel-border); border-radius: 0; }
 
         /* Flappy Game */
         .flappy-app { position: relative; width: 100%; height: 100%; overflow: hidden; outline: none; user-select: none; background: var(--os-bg);}
-        .flappy-bird { position: absolute; width: 28px; height: 28px; background: var(--os-accent); border: 2px solid var(--text-primary); left: 60px; top: 150px; transition: transform 0.1s linear, background 0.1s ease; z-index: 5; box-shadow: 4px 4px 0px var(--panel-shadow);}
-        .flappy-pipe { position: absolute; width: 70px; background: var(--panel-bg); border: 2px solid var(--os-accent); z-index: 4; box-shadow: 4px 4px 0px var(--panel-shadow);}
-        .flappy-score { position: absolute; top: 24px; width: 100%; text-align: center; font-size: 72px; font-family: var(--font-mono); font-weight: 800; color: var(--text-primary); z-index: 10; text-shadow: 6px 6px 0px var(--os-bg); pointer-events: none;}
-        .flappy-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-mono); color: var(--os-bg); font-size: 16px; font-weight: 700; text-transform: uppercase; text-align: center; background: var(--text-primary); padding: 24px 40px; border: 4px solid var(--os-bg); cursor: pointer; z-index: 10; box-shadow: 12px 12px 0px var(--os-accent);}
+        .flappy-bird { position: absolute; width: 24px; height: 24px; background: var(--os-accent); left: 80px; top: 150px; transition: transform 0.1s linear; z-index: 5;}
+        .flappy-pipe { position: absolute; width: 60px; background: var(--text-primary); z-index: 4; }
+        .flappy-score { position: absolute; top: 32px; width: 100%; text-align: center; font-size: 80px; font-family: var(--font-head); font-weight: 900; color: var(--text-inverse); z-index: 10; text-shadow: -2px -2px 0 var(--text-primary), 2px -2px 0 var(--text-primary), -2px 2px 0 var(--text-primary), 2px 2px 0 var(--text-primary); pointer-events: none;}
+        .flappy-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-head); color: var(--os-bg); font-size: 24px; font-weight: 900; text-transform: uppercase; text-align: center; background: var(--text-primary); padding: 32px 48px; cursor: pointer; z-index: 10; letter-spacing: -1px;}
     </style>
 </head>
 <body>
@@ -318,74 +319,57 @@
     <!-- Spotlight Search Overlay -->
     <div id="spotlight-overlay">
         <div class="spotlight-box">
-            <input type="text" id="spotlight-input" placeholder="Type app name or run command..." autocomplete="off">
+            <div class="spotlight-label">Command Palette</div>
+            <input type="text" id="spotlight-input" placeholder="Search or execute..." autocomplete="off">
         </div>
     </div>
 
-    <!-- Dynamic Background via HTML5 Canvas -->
+    <!-- Background Engine -->
     <div class="bg-container" id="bg-container">
         <canvas id="blob-canvas"></canvas>
-        <div class="grid-overlay"></div>
+        <div class="dot-matrix"></div>
         <div id="bg-ascii-container"></div>
     </div>
 
-    <!-- Top Bar -->
+    <!-- Editorial Top Bar -->
     <div class="top-bar">
         <div class="top-bar-left">
             <div class="menu-item" onclick="openApp('dashboard')">
-                <svg class="menu-icon-svg" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                <span>Yves.OS / Core</span>
+                <span style="background: var(--text-primary); color: var(--os-bg); padding: 2px 6px;">Y.OS</span>
+                <span>SYSTEM CORE</span>
             </div>
-            <div class="menu-item" style="color: var(--text-secondary);" id="active-app-name">System.Desktop</div>
+        </div>
+        <div class="marquee-container">
+            <div class="marquee-content">
+                // SYSTEM ONLINE // ALL NODES RESPONDING // AURA PHYSICS ACTIVE // ENJOY THE SILENCE // 
+                SYSTEM ONLINE // ALL NODES RESPONDING // AURA PHYSICS ACTIVE // ENJOY THE SILENCE //
+            </div>
         </div>
         <div class="top-bar-right">
-            <div class="menu-item" style="color: var(--os-accent);" title="Cmd+K to search" onclick="toggleSpotlight()">[ CMD+K ] Search</div>
-            <div class="menu-item" id="sys-clock-small">--:-- --</div>
+            <div class="menu-item" style="color: var(--os-accent);" title="Cmd+K to search" onclick="toggleSpotlight()">[ CMD+K ]</div>
+            <div class="menu-item" id="sys-clock-small">--:--</div>
         </div>
     </div>
 
     <!-- Desktop Clock Widget -->
     <div class="desktop-bg-widget pos-top-left" id="desktop-bg-widget">
-        <div class="nothing-clock" id="bg-clock">--<span id="bg-colon">:</span>--</div>
+        <div class="nothing-clock" id="bg-clock">--<span style="opacity:0.2;">:</span>--</div>
         <div class="nothing-date" id="bg-date">DAY, MTH 00</div>
     </div>
 
     <!-- Window Layer -->
     <div id="window-layer"></div>
 
-    <div class="dock-container brutal-panel">
-        <div class="dock-item" onclick="openApp('me')" id="dock-me" title="Identity">
-            <div class="dock-icon-wrapper"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
-            <div class="dock-indicator"></div>
-        </div>
-        <div class="dock-item" onclick="openApp('dashboard')" id="dock-dashboard" title="Dashboard">
-            <div class="dock-icon-wrapper"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
-            <div class="dock-indicator"></div>
-        </div>
-        <div class="dock-item" onclick="openApp('workspace')" id="dock-workspace" title="Workspace">
-            <div class="dock-icon-wrapper"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></div>
-            <div class="dock-indicator"></div>
-        </div>
-        <div class="dock-item" onclick="openApp('projects')" id="dock-projects" title="Tasks">
-            <div class="dock-icon-wrapper"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-            <div class="dock-indicator"></div>
-        </div>
-        <div class="dock-item" onclick="openApp('focus')" id="dock-focus" title="Focus Timer">
-            <div class="dock-icon-wrapper"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
-            <div class="dock-indicator"></div>
-        </div>
-        <div class="dock-item" onclick="openApp('terminal')" id="dock-terminal" title="Terminal">
-            <div class="dock-icon-wrapper"><svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg></div>
-            <div class="dock-indicator"></div>
-        </div>
-        <div class="dock-item" onclick="openApp('flappy')" id="dock-flappy" title="System Break">
-            <div class="dock-icon-wrapper"><svg viewBox="0 0 24 24"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon></svg></div>
-            <div class="dock-indicator"></div>
-        </div>
-        <div class="dock-item" onclick="openApp('settings')" id="dock-settings" title="Engine Config">
-            <div class="dock-icon-wrapper"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path></svg></div>
-            <div class="dock-indicator"></div>
-        </div>
+    <!-- Blocky Dock -->
+    <div class="dock-container">
+        <div class="dock-item" onclick="openApp('me')" id="dock-me">Identity</div>
+        <div class="dock-item" onclick="openApp('dashboard')" id="dock-dashboard">Dash</div>
+        <div class="dock-item" onclick="openApp('workspace')" id="dock-workspace">Drafts</div>
+        <div class="dock-item" onclick="openApp('projects')" id="dock-projects">Tasks</div>
+        <div class="dock-item" onclick="openApp('focus')" id="dock-focus">Timer</div>
+        <div class="dock-item" onclick="openApp('terminal')" id="dock-terminal">Term</div>
+        <div class="dock-item" onclick="openApp('flappy')" id="dock-flappy">Break</div>
+        <div class="dock-item" onclick="openApp('settings')" id="dock-settings">Config</div>
     </div>
 
     <script>
@@ -400,10 +384,6 @@
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
-
-        function setOSAccent(color) {
-            document.documentElement.style.setProperty('--os-accent', color);
-        }
 
         // Spotlight Search (CMD+K)
         function toggleSpotlight() {
@@ -436,11 +416,11 @@
             }
         });
 
-        // --- Alive Canvas Blob Engine ---
+        // --- Alive Canvas Blob Engine (Strictly bounded) ---
         const blobCanvas = document.getElementById('blob-canvas');
         const bctx = blobCanvas ? blobCanvas.getContext('2d') : null;
-        window.isBgEnabled = true; // Setting toggle for canvas background
-        let activeBlobs = 3;
+        window.isBgEnabled = true; 
+        let activeBlobs = 4;
         let auras = [];
         
         function initAuras() {
@@ -449,9 +429,9 @@
                 auras.push({
                     x: Math.random() * window.innerWidth,
                     y: Math.random() * window.innerHeight,
-                    vx: (Math.random() - 0.5) * 2,
-                    vy: (Math.random() - 0.5) * 2,
-                    baseR: (Math.random() * 15 + 15) * (window.innerWidth/100),
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    baseR: (Math.random() * 10 + 15) * (window.innerWidth/100),
                     colorVar: `--blob-${i}-color`
                 });
             }
@@ -464,7 +444,7 @@
             const hasWindows = Object.keys(openWindows).length > 0;
             const isMatrix = document.getElementById('bg-ascii-container').style.display === 'flex';
             
-            // Smart Toggle: Hide canvas if setting is off OR if any window is open OR if ascii art is showing.
+            // Smart Toggle: Pause canvas rendering if any window is open to prevent distraction
             const shouldDraw = window.isBgEnabled && !hasWindows && !isMatrix;
             
             if (!shouldDraw) {
@@ -479,30 +459,29 @@
             bctx.clearRect(0, 0, blobCanvas.width, blobCanvas.height);
             
             const style = getComputedStyle(document.documentElement);
-            bctx.filter = `blur(140px)`;
-            bctx.globalAlpha = 0.55;
+            bctx.filter = `blur(120px)`;
+            bctx.globalAlpha = 0.6;
             
             for (let i = 0; i < activeBlobs; i++) {
                 let aura = auras[i];
                 
-                // Float physics
                 aura.x += aura.vx;
                 aura.y += aura.vy;
                 
-                // Bounce off walls properly without clipping
+                // Strict bounds - perfectly bounce off edges
                 if (aura.x - aura.baseR <= 0) { aura.x = aura.baseR; aura.vx *= -1; }
                 else if (aura.x + aura.baseR >= window.innerWidth) { aura.x = window.innerWidth - aura.baseR; aura.vx *= -1; }
 
                 if (aura.y - aura.baseR <= 0) { aura.y = aura.baseR; aura.vy *= -1; }
                 else if (aura.y + aura.baseR >= window.innerHeight) { aura.y = window.innerHeight - aura.baseR; aura.vy *= -1; }
 
-                // React to mouse (kinetic dodge)
+                // Kinetic dodge
                 let dx = aura.x - mouseX;
                 let dy = aura.y - mouseY;
                 let dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < 300) {
-                    aura.x += (dx / dist) * 2;
-                    aura.y += (dy / dist) * 2;
+                if(dist < 250) {
+                    aura.x += (dx / dist) * 1.5;
+                    aura.y += (dy / dist) * 1.5;
                 }
                 
                 bctx.beginPath();
@@ -514,9 +493,9 @@
         animateCanvas();
         window.addEventListener('resize', initAuras);
 
-        // Sticky Notes (Double Click Desktop)
+        // Sticky Notes (Annotation Style)
         document.getElementById('bg-container').addEventListener('dblclick', (e) => {
-            if (e.target.id === 'bg-container' || e.target.classList.contains('grid-overlay')) {
+            if (e.target.id === 'bg-container' || e.target.classList.contains('dot-matrix')) {
                 createSticky(e.clientX, e.clientY);
             }
         });
@@ -531,13 +510,13 @@
             
             sticky.innerHTML = `
                 <div class="sticky-header" id="header-${id}">
+                    <span>Annotation / ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     <span class="sticky-close" onclick="document.getElementById('${id}').remove()">✕</span>
                 </div>
-                <div class="sticky-content" contenteditable="true" spellcheck="false">Record fragment...</div>
+                <div class="sticky-content" contenteditable="true" spellcheck="false">Dump thoughts here...</div>
             `;
             document.getElementById('window-layer').appendChild(sticky);
             
-            // Simple drag for sticky
             let isDown = false, sX = 0, sY = 0;
             const header = sticky.querySelector('.sticky-header');
             header.onpointerdown = (ev) => {
@@ -553,16 +532,215 @@
             setTimeout(() => sticky.querySelector('.sticky-content').focus(), 50);
         }
 
+        // --- System UI Drag/Drop & Management Engines ---
+        function makeDraggable(winEl, handleEl) {
+            let startX = 0, startY = 0, currentX = 0, currentY = 0;
+            handleEl.onpointerdown = (e) => {
+                if (winEl.classList.contains('maximized')) return; 
+                e.preventDefault(); focusWindow(winEl.id.replace('win-', ''));
+                startX = e.clientX; startY = e.clientY;
+                
+                winEl.classList.add('dragging');
+
+                document.onpointermove = (ev) => {
+                    ev.preventDefault(); 
+                    currentX = startX - ev.clientX; currentY = startY - ev.clientY;
+                    startX = ev.clientX; startY = ev.clientY;
+                    
+                    let newTop = winEl.offsetTop - currentY, newLeft = winEl.offsetLeft - currentX;
+                    if (newTop < 36) newTop = 36; // Prevent dragging behind top bar
+                    
+                    winEl.style.top = newTop + "px"; winEl.style.left = newLeft + "px";
+
+                    // Kinetic skew effect based on velocity
+                    let skewX = Math.min(Math.max(currentX * -0.3, -3), 3);
+                    winEl.style.transform = `scale(1) skewX(${skewX}deg)`;
+                };
+                document.onpointerup = () => { 
+                    winEl.classList.remove('dragging');
+                    winEl.style.transform = 'scale(1) skewX(0deg)';
+                    document.onpointermove = null; 
+                    document.onpointerup = null; 
+                };
+            };
+        }
+
+        window.toggleMaximize = function(appId) {
+            const win = document.getElementById(`win-${appId}`);
+            if (!win) return;
+
+            if (win.classList.contains('maximized')) {
+                win.classList.remove('maximized');
+                win.style.top = win.dataset.oldTop || '100px';
+                win.style.left = win.dataset.oldLeft || '100px';
+                win.style.width = win.dataset.oldWidth || '600px';
+                win.style.height = win.dataset.oldHeight || '400px';
+            } else {
+                win.dataset.oldTop = win.style.top;
+                win.dataset.oldLeft = win.style.left;
+                win.dataset.oldWidth = win.style.width;
+                win.dataset.oldHeight = win.style.height;
+
+                win.classList.add('maximized');
+                win.style.top = '36px';
+                win.style.left = '0px';
+                win.style.width = '100vw';
+                win.style.height = 'calc(100vh - 36px - 72px)'; // leave room for dock
+            }
+        }
+
+        function focusWindow(appId) {
+            const allWins = document.querySelectorAll('.window');
+            allWins.forEach(w => w.classList.remove('focused'));
+
+            const win = document.getElementById(`win-${appId}`);
+            if (win) { 
+                zIndex++; 
+                win.style.zIndex = zIndex; 
+                win.classList.add('focused');
+            }
+        }
+
+        window.closeWindow = function(appId) {
+            const win = document.getElementById(`win-${appId}`);
+            if (win) {
+                win.style.opacity = '0'; win.style.transform = 'scale(0.97)';
+                setTimeout(() => {
+                    if(appId === 'flappy' && window.flappyLoopId) cancelAnimationFrame(window.flappyLoopId);
+                    if(appId === 'focus') pausePomo();
+                    win.remove(); delete openWindows[appId];
+                    const dockItem = document.getElementById(`dock-${appId}`);
+                    if(dockItem) dockItem.classList.remove('active');
+                    
+                    const remaining = Object.keys(openWindows);
+                    if(remaining.length > 0) focusWindow(remaining[remaining.length - 1]);
+                }, 200);
+            }
+        }
+
+        // --- App Registry & Launching ---
+        const appRegistry = {
+            me: { name: 'Identity', width: 600, height: 480, render: () => `
+                <div class="me-app">
+                    <div class="me-meta-tag">PROFILE_DATA // V1.0</div>
+                    <div class="me-details">
+                        <h1>Yves</h1>
+                        <p>Designer, developer, and builder of digital environments. Stripping away the generic to find the raw architecture underneath.</p>
+                        <div class="stats-grid">
+                            <div class="stat-box"><span class="stat-val">34</span><span class="stat-lbl">Projects</span></div>
+                            <div class="stat-box"><span class="stat-val">2.1k</span><span class="stat-lbl">Commits</span></div>
+                            <div class="stat-box"><span class="stat-val">0</span><span class="stat-lbl">Blurs</span></div>
+                        </div>
+                    </div>
+                </div>`
+            },
+            dashboard: { name: 'Dash', width: 700, height: 500, render: () => `
+                <div class="dash-app">
+                    <div class="dash-header">
+                        <h1>Command Center</h1>
+                        <p>System status nominal.</p>
+                    </div>
+                    <div class="dash-focus-box">
+                        <div class="dash-focus-tag">Main Objective</div>
+                        <input type="text" class="dash-input" placeholder="What needs to be done today?">
+                    </div>
+                </div>`
+            },
+            terminal: { name: 'Term', width: 600, height: 400, render: () => `
+                <div class="terminal-app" id="term-content"></div>`
+            },
+            focus: { name: 'Timer', width: 400, height: 400, render: () => `
+                <div class="focus-app">
+                    <div class="timer-tag" id="pomo-status-text">WORK BLOCK</div>
+                    <div class="timer-display" id="pomo-display">25:00</div>
+                    <div class="timer-controls">
+                        <button class="app-btn" id="pomo-start-btn" onclick="togglePomo()">Start</button>
+                        <button class="app-btn" onclick="resetPomo(25)">25m</button>
+                        <button class="app-btn" onclick="resetPomo(5)">5m</button>
+                    </div>
+                </div>`
+            },
+            workspace: { name: 'Drafts', width: 850, height: 600, render: () => `<div class="notion-app" id="notion-content"></div>` },
+            projects: { name: 'Tasks', width: 700, height: 550, render: () => `<div class="tracker-app" id="projects-content"></div>` },
+            settings: { name: 'Config', width: 500, height: 400, render: () => `
+                <div class="settings-app">
+                    <div class="settings-section">
+                        <h2>Engine</h2>
+                        <div class="settings-row"><span>Background Render</span> <button class="app-btn" id="toggle-bg-btn" onclick="toggleBg()">ON</button></div>
+                    </div>
+                    <div class="settings-section">
+                        <h2>Palette Overrides</h2>
+                        <div class="settings-row"><span>Accent Color</span> <input type="color" class="settings-color" value="#e0d2b4" onchange="updateCSS('--os-accent', this.value); updateCSS('--blob-1-color', this.value);"></div>
+                        <div class="settings-row"><span>Secondary Aura</span> <input type="color" class="settings-color" value="#98a69e" onchange="updateCSS('--blob-2-color', this.value)"></div>
+                    </div>
+                </div>`
+            },
+            flappy: { name: 'Break', width: 400, height: 500, render: () => `
+                <div class="flappy-app" id="flappy-container" tabindex="0">
+                    <div class="flappy-score" id="flappy-score">0</div>
+                    <div id="flappy-pipes"></div>
+                    <div class="flappy-bird" id="flappy-bird"></div>
+                    <div class="flappy-msg" id="flappy-msg" onclick="startFlappyGame()">Start</div>
+                </div>`
+            }
+        };
+
+        window.openApp = function(appId) {
+            if (openWindows[appId]) { focusWindow(appId); return; }
+            
+            const app = appRegistry[appId];
+            if (!app) return;
+
+            const winId = `win-${appId}`;
+            const win = document.createElement('div');
+            win.className = 'window';
+            win.id = winId;
+            
+            // Stagger spawn
+            const offset = Object.keys(openWindows).length * 30;
+            win.style.width = app.width + 'px';
+            win.style.height = app.height + 'px';
+            win.style.top = (60 + offset) + 'px';
+            win.style.left = (100 + offset) + 'px';
+
+            win.innerHTML = `
+                <div class="window-header" id="header-${appId}">
+                    <div class="window-title">${app.name}</div>
+                    <div class="window-title-meta">APP_ID: ${appId.toUpperCase()}</div>
+                    <div class="editorial-controls">
+                        <button class="ed-btn min" onclick="toggleMaximize('${appId}')">[ ]</button>
+                        <button class="ed-btn close" onclick="closeWindow('${appId}')">[ X ]</button>
+                    </div>
+                </div>
+                <div class="window-content">${app.render()}</div>
+            `;
+
+            document.getElementById('window-layer').appendChild(win);
+            openWindows[appId] = true;
+            
+            const dockItem = document.getElementById(`dock-${appId}`);
+            if(dockItem) dockItem.classList.add('active');
+
+            makeDraggable(win, win.querySelector('.window-header'));
+            win.onpointerdown = () => focusWindow(appId);
+            focusWindow(appId);
+
+            // Init App Logic
+            if (appId === 'terminal') renderTerminal();
+            if (appId === 'workspace') renderNotion();
+            if (appId === 'projects') renderProjects();
+        }
+
         // Data Models
         let termHistory = [
             "Yves.OS Terminal [Version 4.0.0]",
-            "Brutalist Environment Active. Connections secure.",
+            "Editorial Environment Active. Connections secure.",
             "Type 'help' for executable binaries."
         ];
 
         let notionData = [
-            { id: 1, title: "Architecture", icon: "🏗️", content: "<h1>Structure</h1><p>We tore down the soft blurs. We built solid borders.</p><ul><li>Dynamic reactive canvas</li><li>Kinetic drag physics</li></ul>" },
-            { id: 2, title: "Log 001", icon: "📟", content: "<h2>System Check</h2><p>All nodes responding optimally.</p>" }
+            { id: 1, title: "Manifesto", icon: "01", content: "<h1>Structure</h1><p>We tore down the soft blurs. We built solid borders.</p><ul><li>Dynamic reactive canvas strictly bounded</li><li>Kinetic drag physics</li></ul>" },
+            { id: 2, title: "Log 001", icon: "02", content: "<h2>System Check</h2><p>All nodes responding optimally.</p>" }
         ];
         let activeNotionPageId = 1;
 
@@ -572,6 +750,7 @@
         let pomoMode = 'Work';
         let pomoMinutes = 25;
         let pomoSeconds = 0;
+        let pomoIsRunning = false;
 
         let projectsData = [];
 
@@ -659,21 +838,197 @@
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`,
+             house: `⠠⠐⡀⠀⡀⡤⣀⢠⠏⠀⠄⠶⠋⠂⢀⡗⠫⠂⠄⠀⠀⠀⠀⠀⠀⠀⡀⠄⢂⠔⢢⢘⡰⢌⢢⠱⢌⢢⡑⢌⠆⣑⠂⠀⠐⠀⠀⠀⠄⠰⣈⠖⡡⢎⠲⡡⢞⡰⢣⡱⢩⡒⣍⠮⡱⢎⡵⣩⢎⡵⢫⣜⣣⢏⡷⣭⢯⡝⣧⢏⡷⣹⢎⡷
+⠀⠂⠀⠁⠀⠁⠈⠈⠀⠈⠒⠉⠑⠈⠃⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠌⡀⠎⡐⢢⠰⢌⢢⠑⡊⠔⡌⠲⢌⢢⡁⠀⠀⠀⠀⠀⠠⢁⠒⡬⡑⢎⡱⢱⢊⡔⢣⠜⡱⡘⢆⡣⠳⣌⢲⡑⣎⢖⣣⠞⣴⢫⣖⡳⢮⣝⢮⣛⠶⣝⡺⡼
+⠀⠀⠐⠈⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠡⠀⠀⠀⠀⠐⠀⠁⡐⠀⠆⡑⢌⠢⡑⢊⠤⠣⠥⣉⠒⣍⠢⢃⡄⠀⠀⠀⠀⠀⠐⡈⢱⢢⡙⢦⡙⢆⡣⢎⡥⣋⠵⣉⢖⡩⣓⠬⢣⡝⢦⡚⣬⢛⣬⢳⢮⣝⢯⡞⣯⢾⡹⣞⡵⣛
+⠀⠀⡀⠠⠀⠀⠀⠀⠀⠀⠂⠀⠄⠀⠀⠀⠀⢀⠐⠀⠄⠠⠀⢄⡈⢄⡀⠁⢂⠡⢂⠱⡈⠎⡔⣉⠲⢠⡉⢤⠃⢧⠀⠀⠀⠀⠀⠀⢀⠘⢢⠱⡘⢦⡙⢦⣑⢣⠲⣅⠞⣔⢪⢒⡥⣚⢥⡚⢦⡝⢦⢻⣌⡟⣞⣼⣳⢻⣜⢧⣛⢦⡽⣭
+⠀⠄⢀⠀⠄⠀⠂⠁⠀⠐⢀⠂⠀⠀⠀⠀⠀⠄⠀⠀⠀⠀⠈⠀⠈⠠⡙⠀⡌⢢⠁⠞⡠⠍⡔⢌⠲⣁⠞⣠⠋⢆⡁⠀⠀⠀⠀⠀⠄⡉⢖⣡⢋⠖⡭⢆⡣⢏⠼⣘⠞⣌⠧⢫⠴⣩⢖⡹⢦⡙⢮⡳⢮⡝⣾⣱⢯⠷⣹⢎⡽⢮⡵⣺
+⠈⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠐⠀⠂⠀⠀⠀⠀⠀⠐⠀⡐⢀⠐⠠⠑⠤⡁⢎⠢⡑⠬⡘⡄⣃⠦⡘⢤⢉⡒⠄⠀⠀⠀⠀⠀⠂⡘⢢⠜⢌⢫⡜⢎⡵⡩⢞⢥⡚⣬⢛⡬⢳⡱⢎⡞⣥⢛⡶⣩⠷⣹⡖⣯⢯⡻⣕⠾⣜⡳⣞⡵
+⠀⠀⠁⠀⠀⠀⠀⠀⠀⠈⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠀⠄⣈⠡⠉⢆⠱⣈⢒⡉⠦⡑⠢⣅⠢⡑⣌⠒⣌⠂⠀⠄⠀⠀⠀⠐⡈⢇⡺⠠⠑⡬⢳⡰⣋⠞⡦⣝⡲⣍⠞⣥⢹⠮⣜⢖⣫⡜⣣⠟⣵⣫⢷⢯⣳⡝⣎⢷⣹⢲⡽
+⠀⠀⠀⠈⠐⠠⢀⠀⠀⠂⠀⠀⠠⠐⠀⢌⠀⠀⠀⠀⠀⠂⠁⠌⡐⡀⢆⡉⢆⡱⢠⢃⡜⡰⢡⢃⠦⠱⡌⠴⢡⢢⠁⠀⠀⠀⠀⠀⢂⠩⢆⡱⣉⠞⡌⢇⠶⣩⢛⡼⢲⠽⣬⡛⣬⢳⢫⡜⣞⡴⣹⢧⣛⣮⡽⣯⢻⣖⡿⣜⡧⣏⢷⣹
+⠀⠀⠀⠀⠀⠀⠉⢶⣁⠀⣄⠐⡠⠀⠈⢀⠀⠀⠀⠀⠁⠌⡐⠠⢄⡑⢢⠘⠤⢒⠡⡌⠴⣁⢣⢊⡔⠣⣌⡑⠎⠄⠃⠀⠀⠀⠀⠀⠈⠚⠠⠓⢌⡚⠜⣨⢃⢧⢫⡜⣹⠞⣴⡹⣌⠷⣙⠾⣱⢞⡵⣫⣞⣵⣻⣽⣻⠾⣽⢺⡵⣏⣷⣹
+⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓⠦⣄⣁⣢⠱⢀⠠⢀⠠⠁⠌⡐⢠⠃⢆⡘⠤⣉⠚⡌⢒⡡⢚⡐⢆⡓⠈⠃⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠊⠑⠃⢚⡜⢦⡙⣖⠻⢦⡳⣍⢯⡝⣫⢗⡯⣞⢷⣫⣞⡷⢧⣟⡿⣭⢳⡳⣽⢲⡽
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠚⠹⡠⢐⡀⢂⠅⠒⠠⠡⢌⠰⣀⢃⠆⡍⠴⣁⠒⡁⠐⡀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢢⠝⡬⢏⢧⠳⣞⡼⣩⢗⡻⣞⣭⡻⣞⣧⣟⡿⣎⡿⣵⢯⣳⣭⠷⣽
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡈⠄⠠⠑⡈⢁⠢⠁⢆⡘⢌⠘⠄⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⠳⣍⢞⡹⣖⡹⣎⢯⣳⢽⡲⣿⣹⢶⣯⠷⣯⢷⣻⣞⡷⣯⢿⣽
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠁⡐⠠⢈⠁⠒⡈⠔⠠⢉⠄⠐⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠈⠎⠵⢪⢵⡫⣞⠽⣎⡷⣏⣯⢟⣮⢿⣹⢯⡷⣾⡽⣯⡿⣾
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠄⢀⠐⠠⢁⠂⡉⠄⠡⠌⢁⠂⠀⠀⠀⠀⠀⠀⠀⠐⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠒⢧⢫⡟⣼⢳⣻⣞⣯⣟⣯⣟⣯⣟⡾⣽⣷⢿⣿
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠁⡀⠐⠠⢈⠐⡠⠌⡐⡈⠥⠈⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢃⠎⡄⢻⣞⣳⢏⣾⣳⣯⢷⣻⢾⣽⣻⢷⣯⣟⣾
+⠀⠀⠀⠀⠀⠀⠀⠠⠐⠀⡁⠂⠄⡑⠈⠄⢂⠐⠄⢂⠜⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠌⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠱⣤⠻⣜⠿⣼⡳⣯⢿⣏⡿⣾⡽⣟⠾⣯⣿
+⠀⠀⠀⠀⠀⢀⠈⠄⠠⠁⠄⡁⠂⢄⠉⡐⢈⠐⡈⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⡀⠀⠀⠀⠻⣼⣛⠾⡽⣝⣻⣞⣽⣳⢿⣽⣻⡽⣾
+⠀⠀⠀⠀⠠⠀⠠⠈⠄⡁⢂⠐⡁⢂⠐⡀⢂⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⣀⠐⣎⡔⡠⠍⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢽⡻⣵⢯⣷⣫⢾⣽⣞⣧⢿⣽⣻
+⠀⠀⠀⡈⠀⠄⠡⢈⠐⠠⢈⠐⡀⢂⠰⢀⠡⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⢀⣠⢤⡴⣤⢆⣤⣐⠂⠒⠀⡐⢤⡠⢆⡲⣈⠄⣄⣲⢱⡭⡞⡴⢣⡱⢃⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠔⢯⢷⣏⢿⡶⣿⣹⣞⡾⣭⣟⡾⣿
+⠀⠀⡐⠀⠌⠠⢁⠂⠌⠠⢁⠂⡐⢀⠢⢀⠂⠁⠀⠀⡘⠀⠀⠀⠀⠠⠀⣄⣂⣔⣣⢳⢯⣾⣽⣾⣷⣭⣯⣳⣛⣾⣧⣟⣧⡷⣭⣟⣮⣗⣯⣖⣻⢭⢧⡝⣣⠂⢀⠆⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠢⣜⢯⣞⣯⢟⣧⣟⣾⢳⣟⡾⣽⣻
+⠀⠠⠐⠈⠄⡁⠂⠌⠠⢁⠂⠤⢁⠂⡐⠂⠌⠀⠀⠀⠀⠀⠀⠀⠤⣁⠘⣶⢣⣮⢳⣏⠾⣽⣿⣽⣿⣿⣿⣿⣿⣿⣿⣽⣷⣟⣷⣯⣷⣿⡮⣟⡵⣏⠾⣜⣥⢛⡜⡪⠄⠀⡅⠀⠀⠀⠀⠠⠀⠀⠀⠸⣻⣎⣯⣟⠾⣞⣽⢻⣞⣽⡳⣿
+⠀⡁⢂⠁⢂⠄⠡⢈⠁⠂⠌⡐⢀⠂⠡⠌⠐⠀⠀⠀⠀⠀⠀⠀⡀⠦⡱⢧⡻⣜⡳⢮⣛⣷⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣿⣻⣷⣿⣿⣽⣯⣟⠾⣝⠾⣜⢯⡞⣱⠂⠀⡐⠀⠀⠀⠀⠁⠀⠀⠠⢤⣞⣳⡽⣺⠿⡽⣞⣯⣞⣳⡽⣳
+⠐⣀⠢⠈⡀⡈⢠⠁⠌⡈⠔⡀⢂⠉⡐⢈⠀⠀⠀⠀⠀⠀⠀⠐⣈⠲⣩⢷⡹⢧⣛⠷⣯⢞⣿⣻⣿⣿⣽⣿⣟⣷⣿⣿⣿⣷⣿⢯⣿⣾⢷⡾⣏⣯⢻⣜⡳⡞⣥⠃⠀⢄⡁⠀⠀⠀⠀⠀⠀⠀⠐⢻⢮⣝⡷⣻⠽⣧⣗⢯⣳⣝⣳
+⠜⠤⢃⠕⣀⠁⠠⠘⠠⢐⠀⠒⡀⢂⠐⠠⠀⠀⠀⠀⠀⠀⠀⠐⠤⢓⠼⢮⡝⣧⢏⡿⣼⢻⣾⣿⣻⣿⡿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⣿⢯⣿⣻⣝⠶⣫⠼⣱⢛⡤⠄⢁⠂⠀⠄⠀⠀⠀⠀⠀⠀⠀⢺⡳⣏⢾⡱⣏⠷⣎⢿⡱⢮⡽
+⡘⣄⠣⡘⢄⠣⢄⡈⠁⠂⠌⡐⢀⠂⠌⠠⠁⠀⠀⠀⠀⠀⠀⠀⢓⠬⣙⢮⣝⡲⢏⡾⣵⢯⣟⡿⣿⢿⣿⣿⣿⢯⣷⣿⢿⣿⣿⣿⣿⣿⣿⣽⡷⣞⡯⣇⡻⢥⡻⡜⡀⠀⢀⠂⠀⠀⠀⠀⠀⠀⠀⠸⡏⢷⣹⣎⡷⣭⡻⣜⢧⣛⢧⣟
+⠓⠨⠔⡡⢈⠦⠡⠈⠔⢈⠐⡀⠂⠌⠠⢁⠂⠀⠀⠀⠀⠀⠀⠀⢌⠲⣉⢖⡮⣝⣫⢷⣫⢿⣹⢿⣹⣿⢿⡿⣿⣿⣟⡿⣯⢟⡯⣿⣿⢿⣾⣿⣻⣽⡞⣵⢫⠷⣱⢎⡅⢀⠀⠀⠀⠀⠀⠀⠐⠶⠰⠚⣛⣎⣧⡝⣾⣱⣛⡼⣣⣛⢮⣞
+⢌⣑⣪⡵⡈⢆⠱⠈⠂⠌⡐⠠⠡⠘⡀⠆⡈⠀⠀⠀⠀⠀⠀⠀⢌⠲⣉⢮⡵⣺⠵⣎⢷⡙⣮⢻⡜⡷⢯⡟⣧⢟⡾⡽⣭⣛⠷⣜⠽⠭⢛⡺⡵⢯⡽⣓⢯⠻⣕⠮⣜⡀⠀⠀⠀⠀⠀⠀⠀⠀⠐⢿⡹⣭⣘⠛⣒⠫⡷⣝⢳⡭⣷⢺
+⣟⣺⢳⢙⠻⣆⡐⠨⠀⠂⠌⡁⠆⡑⢠⠂⣁⠂⠀⠀⠀⠀⠀⠈⠄⠳⢭⡺⣜⢣⡻⡜⢮⣙⠦⣏⠾⣭⠳⠝⠊⠉⠉⠁⠉⠑⠫⢜⣣⡕⠁⢧⡛⢧⠳⣍⢾⡹⣬⢛⡴⠂⠀⠀⡀⠀⠀⠀⠀⠀⠀⣸⢣⢷⡸⡝⣎⠷⡹⣜⣫⢞⡵⣫
+⣿⢲⡹⠄⠃⠨⠄⠂⡄⠣⠈⠔⡐⠨⢄⠒⣠⢡⠀⠀⠀⠀⠀⠰⡈⠥⢣⠳⡜⣣⠳⡍⡞⢬⢛⡜⣯⠊⠁⠀⣴⣆⠠⠤⢀⣰⠀⠀⠐⡽⠀⣣⠚⡥⢛⡌⡲⠹⡔⢫⠔⠁⠀⡁⠀⠀⠀⠀⠀⠀⠀⢱⢫⢶⡙⡞⣵⢫⠷⡭⢧⡻⡜⣧
+⣟⢣⠳⡡⠀⢂⠄⢣⠐⡡⢉⠒⠌⡡⢂⠜⣀⠣⠀⠀⠀⠀⠈⠠⢁⠌⡥⢓⡜⢤⠓⡜⣌⢣⢋⡜⡲⡍⡞⡉⡲⢬⣛⡯⣝⠮⣙⠭⡙⢜⡁⢆⠓⣌⠲⣈⠵⡩⢜⡡⠎⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⣙⢮⣣⡝⣞⡭⣏⡳⣝⢧⡳⣝⢶
+⠌⣆⢣⡁⢆⠡⢊⠰⡈⠔⢡⠊⠔⡡⠌⢒⠠⠒⡄⠀⠀⠀⠀⠡⢈⠒⡌⢣⠜⡢⢍⠲⢌⢆⠳⣌⢳⡱⢍⡆⢹⣎⣟⡷⣭⢣⡱⢆⣯⠀⡍⢦⠩⢄⠣⠜⢢⡑⢎⠴⡁⠠⠁⠀⠀⠀⠀⠀⠀⢀⠠⢛⣮⢳⣝⠾⣜⢧⡻⣜⡧⣟⣬⢳
+⠳⣌⠳⡰⠈⠒⡤⢀⠱⢈⠆⡘⠤⢡⠘⡄⠣⡑⠤⠀⠀⠀⠀⢘⢢⡱⣈⠣⡜⡡⢎⠳⣌⢎⡳⡜⣦⡹⢮⡜⢦⢳⢾⣽⢣⢷⣙⢮⡳⢎⡜⣤⠳⣌⢣⢙⠢⡜⢌⡲⢡⠔⣀⠀⠀⠀⠀⠀⢂⠀⠄⣹⢲⡝⣮⢟⡽⣞⣷⣹⢞⡷⣎⡟
+⡓⢦⡙⠄⡀⠣⢐⡉⠦⢱⡈⡔⠡⠆⠱⣈⠑⠤⣉⠃⠄⠀⠀⠢⢅⡳⣱⢏⠶⡱⢎⡳⡜⣎⠳⣝⢶⡹⣓⢎⠧⣛⢾⡽⣬⠀⣯⢳⡹⣎⢵⣊⡗⢦⢣⢎⡱⣘⢦⣙⢧⡙⡤⠂⠀⠀⠀⠀⡃⠈⢰⢣⡟⡼⣏⡾⣹⡳⡾⣭⡻⣜⢧⣻
+⡱⢢⡑⢎⡄⠡⠂⡜⢠⠃⡴⢈⡓⢌⡒⠤⣉⠒⠤⢈⠀⠀⠀⠰⠈⡵⣙⣮⢳⡭⢇⣳⢹⣌⠷⣪⢗⢣⠝⣎⠮⣙⣮⡗⢧⢳⡭⢢⠳⣎⠷⡼⣜⣣⢏⡜⡶⣹⢶⡹⢎⡱⠂⠀⠀⠀⠀⠂⢀⡤⡰⢧⠹⣳⢭⣳⢏⡷⣛⡶⣝⣮⢳⢧
+⠬⢱⡙⡖⣢⠑⠌⡄⠣⡘⢄⠣⡘⠤⡘⠰⢠⢉⠒⠌⡀⢁⠂⠈⠄⠐⢭⡚⣧⢻⡝⣮⢳⣎⢯⠳⣎⠅⠺⠐⣫⢵⡺⣝⡲⣯⠑⠭⡱⢨⡟⣵⡹⢎⡯⣝⡳⢭⠮⠱⢋⠔⠀⠀⠀⠀⣜⡰⠨⢀⢯⡜⣥⢓⡏⣶⢫⢗⡯⣜⡳⣎⡟⣾
+⡌⢥⡘⠴⣡⢋⡔⢌⠡⡐⡌⢒⣁⠣⠌⡑⠢⢌⡘⠄⠃⠀⠑⠀⠀⠀⠀⠄⢓⡪⣝⠮⣗⢮⡳⣝⢮⠀⢄⡠⢇⡟⣼⢣⢷⣹⠂⣱⠕⣫⢞⡵⣭⠻⣜⡱⡙⣆⠣⠑⠀⠀⠀⠀⠀⠸⠌⠀⠁⡸⢆⣛⢦⠻⣜⢧⣛⢮⢳⢭⡳⣝⢾⣱
+⣘⢦⡹⣔⡘⢦⡘⡤⡐⠡⠜⡐⢦⡙⡌⢢⠁⢆⡘⠌⢢⠁⡈⠁⠀⠀⠀⠈⠀⡑⢊⠷⣩⡞⣵⣫⢞⠰⠃⢞⡹⢾⣱⣿⡾⢧⠳⠌⢢⢱⣫⢞⡵⡛⢦⠓⡍⢠⠁⠈⠀⠐⡀⠀⠂⠠⣔⢣⢎⡵⣋⠾⡜⡽⢎⡞⣭⠞⡽⣊⢷⡹⣞⣽
+⠩⢆⠳⠟⠖⠰⢑⠒⡑⢢⠃⡍⠢⠔⡨⠄⡊⠔⡨⠘⡄⢃⠔⢩⠀⠀⠀⠐⠠⡀⡙⣎⠵⣋⢶⡹⣎⠀⠈⠀⠙⠽⡯⣋⠍⠀⠀⠀⢀⡶⢭⣚⠶⣙⢎⡱⠈⠔⠀⠀⠀⠁⠀⠐⢀⠳⣌⠳⣎⠶⣩⢳⡙⡞⡭⡞⣥⡛⡷⣹⢎⡷⣻⢼
+⠱⣌⠱⢢⠌⢢⠉⢆⡉⢆⠱⡈⡕⢨⠐⡡⢂⠱⣀⠣⠘⡄⢊⠤⠀⠀⠀⠀⠐⡡⠜⡬⢳⢭⡳⣝⢮⢣⠀⠀⠀⠘⠇⠁⠀⠀⠀⠀⢨⣙⢧⡘⡭⣓⠮⡐⠉⡐⠀⠁⠠⠐⠀⠀⣌⠳⣌⢳⢬⢳⡱⣣⢯⡹⢲⣝⡲⢭⣳⡹⣎⠷⣭⢻
+⡱⢌⡓⢤⡉⢆⡉⢆⡘⢄⠣⠰⡘⢄⠣⡐⢡⠒⠤⣁⠣⢈⠆⡰⢁⠀⠀⠀⠀⠰⣉⠖⡭⢖⠹⢎⡋⠘⠀⠀⠀⢀⡄⠀⠀⠀⠀⠀⠂⢹⠒⣧⠲⢥⣓⠉⠤⡐⠀⠀⠐⠀⠀⠰⣌⠳⣌⢫⡜⣣⢳⡱⢎⡵⣋⢶⡙⣮⠵⣣⢯⡻⣭⢻
+⢲⢱⡘⢢⡘⠤⡘⠤⡘⢠⢃⠱⡈⢆⠢⡑⢂⠍⠰⠀⠊⠀⠀⠀⠀⠀⠀⠀⠀⠠⡁⠎⣁⠫⠘⠀⡈⠅⠀⠀⠀⠊⠀⠀⠀⣁⠂⢀⢠⡀⢣⠒⡀⠂⠸⢌⠑⠀⠀⠀⠀⠀⠀⠐⠪⡕⢎⡳⡸⢥⢳⡙⢮⢲⡝⣲⡹⡜⣽⡱⣏⢷⡹⢯
+⢃⠦⡙⠢⠘⠀⠑⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⡀⠀⠀⠄⠀⠀⠐⡀⠂⠄⡰⠀⡀⣀⠆⣂⠂⠠⠁⠀⠀⠀⠀⠀⢂⠈⠄⠀⠀⢰⠀⠀⠀⠀⠈⢇⠳⣍⠞⣦⢙⣎⠳⣜⢣⢳⡙⡶⣙⠮⣏⢷⣫
+⠌⡐⠀⠀⠀⠠⢆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠡⠀⠀⠀⠀⠀⠁⠀⠁⠀⠁⠃⠱⠈⠀⠀⠀⠀⠁⠀⠀⠀⠀⢀⠠⠈⠀⠀⣀⠸⣀⢀⠀⠀⠀⠀⠉⠆⢏⡴⢩⢌⡳⠌⣣⢇⢯⡱⢭⠳⣭⢲⢣
+⠰⡙⠄⠀⢢⡑⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⢂⠠⢎⡱⢩⠞⡜⣜⠳⡒⠖⢲⡙⢮⡙⡱⠍⢎⡑⠢⠀⢀⠂⠄⠀⠰⠀⡁⠁⠫⠀⠀⢥⣠⡀⠀⠀⠀⠉⠂⠩⢓⠤⢊⠶⣙⢎⠳⣌⡳⢭
+⢢⡕⠌⠒⠡⠋⠐⣁⠂⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠁⠊⠐⠀⠊⠀⠀⠀⠀⠁⠀⠑⠂⠁⠁⠉⠄⡐⠁⢀⠀⢀⠰⠙⢀⠀⠀⠉⢀⠀⠰⡿⠏⠁⠀⠀⠀⠀⠀⠀⠀⠈⠁⠚⠐⢎⠳⢬⡑⣣
+⡟⡈⠀⠀⠀⠀⠄⡀⠃⠀⠀⠀⠀⠀⠀⡀⠠⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡐⠠⠐⠀⠈⠀⠀⠀⠉⠈⠓⢤⣀⠂⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠃⠱
+⡝⢀⠀⠀⠄⠁⡀⠄⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⢄⠀⠠⠄⡄⠢⠐⡠⢐⠢⣁⠢⠐⡀⠈⠀⠀⠀⢀⠀⠀⠀⠀⠠⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠌⢀⠀⠀⠀⠀⠀⠀
+⣠⢀⠌⡐⢀⠂⠠⠈⠄⠀⠄⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⡀⠀⠀⠁⠂⠀⠀⠀⠀⠀⠠⠁⠈⠄⢊⠀⠣⠐⡈⠁⠆⠃⠔⠀⠂⢁⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠂⠡⠀⢀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠠⠀⠀⠀⠀⠀⡀
+⣉⢏⡞⡰⢀⠠⠁⠀⢈⠠⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠁⠀⠀⠡⡀⠀⢀⠀⡀⠠⠐⠈⠀⠀⠀⠁⠐⠀⠠⠈⢀⠈⠀⠀⠀⡀⡀⠀⠀⠀⠀⠀⠀⠀⠌⠀⠀⠀⠈⠂⠀⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⠀⠀
+⢉⠚⠐⠁⠆⡄⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠐⡠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⠀⠠⠀⢄⢣⡑⠉⠒⠆⠀⠀⡀⠠⢈⠐⠈⠠⠁⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢁⠀⠀⠀⣀ `,
+            redjohn: `
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣟⣯⡛⣼⡹⣿⣿⣿⣿⣿⣿⣿⣿⢿⢏⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣦⣄⡀⠀⣀⣼⣞⣶⣽⣶⣽⣯⣿⣿⣽⣭⣬⣤⣬⣬⣄⣀⣀⡀⡀⠀⠀⠀⠀⠀⠹⠿⠿⠿⠿⢿⣿⣿⣿⣿⣿⣿⣶⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣆⣀⣀⣀⢀⡀⡀⠀⠈⠛⠿⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣀⣀⢀⡀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣀⣄⣀⣀⣀⡄⠛⠛⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣻⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄⣠⣀⣄⡀⠈⠙⠛⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣤⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⡷⣟⣯⣿⢿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣤⣄⡀⠀⠀⠀⠉⠉⠛⠛⠿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣄⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠙⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⣟⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣦⣴⣤⣄⠀⠀⠀⠈⠉⠉⠙⢿⣿⣿⣿⣿⣿⣿⣷⣤⣤⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣶⣤⣤⠀⠀⠀⠀⠉⠉⠙⢿⣿⣿⣿⣿⣿⣷⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠿⢿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣶⣶⣄⠀⠀⠀⠈⠘⠿⣿⣿⣿⣿⣿⣶⣶⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠈⠉⠛⠛⠻⠻⠿⠿⠿⠿⠿⠿⢿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣷⣄⠀⠀⠀⠉⠻⠿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠿⠿⠿⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣀⠀⠀⠀⠈⠻⢿⣿⣿⣿⣷⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠛⠿⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣤⡀⠀⠀⠙⠿⢿⣿⣿⣿⣿⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣄⣀⡀⠀⠉⠻⣿⣿⣿⣿⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⡀⠀⠈⠛⣿⣿⣿⣿⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⡏⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠛⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣤⣾⣿⣿⣿⣿⣷⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣴⣾⣿⣿⣿⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣻⣿⣿⣿⣿⣷⣆⡀⠀⣠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠋⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠏⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣟⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢻⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣶⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣤⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣄⠀⠀⣤⣤⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢼⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣿⣿⣿⣿⣿⣿⣿⠄⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣻⣿⣿⣿⣿⣿⣿⡇⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀
+⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣦⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣷⠀
+⠀⠀⠈⠇⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⠿⠿⠿⢿⣿⣿⣿⡁⠀⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⠀
+⠀⠀⠀⠀⠀⠐⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⡏⠀⠀⠀⠈⠿⢿⡿⠃⠀⠀⠀⠙⠛⠻⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⡿⠀
+⠀⠀⠀⠂⠀⠠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢺⣿⣿⡏⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⠀
+⠀⠀⠀⠀⣠⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⢻⣿⣿⣿⣿⣿⣿⣗⠀⣼⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⠀
+⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠋⠛⠉⠋⠉⠉⠉⠙⠿⣿⣿⠟⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠽⣿⣿⣿⣿⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⡟⠁⠀⠀⠉⠙⠻⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⠀
+⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣽⣿⣿⣿⣿⣿⣿⠀
+⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⠀
+⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣾⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⡆
+⠀⣶⣄⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠸⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣽⣿⣿⣿⣿⣿⠇
+⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⡿⢿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⠃
+⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⢠⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣿⣿⣿⣿⣧⠀
+⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⣄⣰⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⢻⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⡟⠀
+⢸⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⢻⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⢸⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⠃⠀
+⢸⣿⡿⢾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⠿⠃⠘⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⠘⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⠇⠀⠀
+⢸⣿⡏⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢺⣧⠸⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⠄⠀⠀
+⢸⣿⠃⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢣⠀⠀⣿⣿⣿⣿⣿⣿⡷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢼⡃⠘⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣼⣿⣿⣿⣿⣿⠄⠀⠀
+⢸⣿⠁⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠀⠀⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⢘⣿⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀
+⢘⣿⡀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣷⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣶⣾⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀
+⢘⣿⣧⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⡿⠏⠀⠀⠀⠀⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⡂⠀⠀⠀⠀
+⠈⣿⣿⣗⠂⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠐⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣧⡀⣨⣿⣿⣿⣿⣿⣿⣿⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⠁⠀⢨⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀
+⠀⠛⣿⡿⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣽⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣰⣿⣿⣿⣿⣿⣯⣥⣽⣿⣿⣿⣿⡃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣸⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⠀⠀⠀
+⠀⠀⢸⣟⠀⠀⠈⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀
+⠀⠀⠘⠃⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡿⠁⠀⣠⣼⣿⣿⣿⣿⣿⣿⣿⠛⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⢾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠛⠛⠿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⣤⣴⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣹⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣄⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣽⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣦⣴⣤⣶⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⢿⡜⠁⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⠏⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢺⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣿⣿⣿⣾⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣾⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣾⣿⣿⣿⣿⣿⣿⣿⠿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢼⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⢺⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢺⣿⣿⣿⣿⡿⠁⠈⠙⢻⣿⠿⠛⠛⠋⠛⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⣻⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣧⡀⠀⠀⢸⡧⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣿⠟⠛⠛⠛⠛⠛⠛⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⢀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⠀⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠋⠛⠙⠛⠛⠛⠻⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣀⣤⣤⣿⣿⣿⣿⣿⣿⣿⡟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣤⡀⠀⠀⢨⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣹⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⢿⣿⡟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣴⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣹⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⡀⠀⠀⠀⠀⠀⠀⠙⠿⠿⠿⠿⠿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣹⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣰⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣆⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣄⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢾⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠛⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⣤⣀⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢺⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣄⣠⣤⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣤⣤⣤⣄⣀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣤⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣶⣴⣶⣿⣿⣿⣿⣿⣶⣤⣤⣤⣤⣤⣦⣴⣦⣶⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠉⠉⠉⠙⣿⣿⣿⡇⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠹⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠏⠁⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣇⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢿⠿⠿⠿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⠿⠛⠛⠻⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⠿⠿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣼⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢘⣿⣿⣿⣯⡀⠀⠀⠀⠀⠀⠀⠋⠛⠻⠻⠟⠿⠻⠿⠿⠿⠿⠿⠿⠿⠿⠻⠟⠿⠛⠟⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢳⣿⣯⣿⣿⣿⣿⣿⣿⡿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣼⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢨⣿⣿⣿⣿⣗⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⣿⣿⣿⣿⣯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣿⣿⣿⢻⣿⣿⣿⣿⣷⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⡷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⡇⢻⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢘⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢺⣿⡷⣸⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣷⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⡧⢹⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠿⡿⠿⠿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⡁⢈⣿⣿⣿⡷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠀⠀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠆⢈⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⠂⠨⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⣷⠀⠀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣷⠀⠀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣟⠀⢀⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣦⠀⠀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠀⠠⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠟⠀⠐⣿⣿⣿⡅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣧⠀⢀⣿⣿⣿⡅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⠀⢨⣿⣿⣿⡃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠠⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⣿⣿⣿⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`
         };
 
         function setAsciiBackground(type) {
             const container = document.getElementById('bg-ascii-container');
             const blobCanvas = document.getElementById('blob-canvas');
             let content = asciiArtDB[type];
-            let color = "#ffffff";
+            let color = "#e0d2b4";
             
-            if (type === 'david' || type === 'edgerunners') color = "var(--ascii-color, #f1c40f)";
-            else if (type === 'lucy') color = "#00ffcc";
-            else if (type === 'moon') color = "#ffffff";
-            else if (type === 'house') color = "#ffaa00";
-            else if (type === 'redjohn') color = "var(--mac-red)";
-            else if (type && type.startsWith('kanye')) color = "#a652e4";
+            if (type === 'david' || type === 'edgerunners') color = "var(--ascii-color, #e0d2b4)";
+            else if (type === 'lucy') color = "#8fa094";
+            else if (type === 'moon') color = "#d5d8de";
+            else if (type === 'house') color = "#e0d2b4";
+            else if (type === 'redjohn') color = "var(--os-accent-hot)";
+            else if (type && type.startsWith('kanye')) color = "#c99a9a";
 
             if (content) {
                 if(blobCanvas) blobCanvas.style.display = 'none';
@@ -682,7 +1037,7 @@
                 container.style.display = 'flex';
                 void container.offsetWidth;
                 container.style.opacity = 1;
-                document.documentElement.style.setProperty('--os-accent', color.startsWith('var') ? '#f1c40f' : color);
+                document.documentElement.style.setProperty('--os-accent', color.startsWith('var') ? '#e0d2b4' : color);
             } else {
                 container.style.opacity = 0;
                 setTimeout(() => {
@@ -705,7 +1060,7 @@
         window.togglePomo = function() {
             if (pomoIsRunning) {
                 clearInterval(pomoInterval);
-                document.getElementById('pomo-start-btn').innerText = 'START';
+                document.getElementById('pomo-start-btn').innerText = 'Start Session';
                 document.getElementById('pomo-start-btn').classList.remove('active');
             } else {
                 document.getElementById('pomo-start-btn').classList.add('active');
@@ -722,7 +1077,7 @@
                     }
                     displayPomo();
                 }, 1000);
-                document.getElementById('pomo-start-btn').innerText = 'PAUSE';
+                document.getElementById('pomo-start-btn').innerText = 'Pause Session';
             }
             pomoIsRunning = !pomoIsRunning;
         }
@@ -733,8 +1088,12 @@
             pomoMode = mins === 25 ? 'Work' : 'Break';
             pomoMinutes = mins; pomoSeconds = 0;
             const startBtn = document.getElementById('pomo-start-btn');
-            if(startBtn) { startBtn.innerText = 'START'; startBtn.classList.remove('active'); }
+            if(startBtn) { startBtn.innerText = 'Start Session'; startBtn.classList.remove('active'); }
             displayPomo();
+        }
+
+        window.pausePomo = function() {
+            if (pomoIsRunning) window.togglePomo();
         }
 
         function displayPomo() {
@@ -751,7 +1110,7 @@
             const action = args[0];
             const target = args[1];
 
-            termHistory.push(`<span class="term-prompt">root@yves:~$</span> ${cmdRaw}`);
+            termHistory.push(`<span class="term-prompt">SYS_EXEC:~</span> ${cmdRaw}`);
             let output = "";
 
             if (cmd === 'david' || cmd === 'edgerunners') {
@@ -800,16 +1159,19 @@
             const container = document.getElementById('notion-content');
             if (!container) return;
             
-            let sidebarHtml = `<div class="notion-sidebar"><div class="notion-sidebar-header"><span>Workspace</span><span class="notion-add-btn" onclick="addNotionPage()">+</span></div><div class="notion-page-list">`;
+            let sidebarHtml = `<div class="notion-sidebar"><div class="notion-sidebar-header"><span>Workspace // Data</span><span class="notion-add-btn" onclick="addNotionPage()">+</span></div><div class="notion-page-list">`;
             notionData.forEach(page => {
-                sidebarHtml += `<div class="notion-page-item ${page.id === activeNotionPageId ? 'active' : ''}" onclick="selectNotionPage(${page.id})"><span>${page.icon}</span><span>${page.title || 'Untitled'}</span></div>`;
+                sidebarHtml += `<div class="notion-page-item ${page.id === activeNotionPageId ? 'active' : ''}" onclick="selectNotionPage(${page.id})"><span>${page.title || 'Untitled'}</span><span>${page.icon}</span></div>`;
             });
             sidebarHtml += `</div></div>`;
             
             const activePage = notionData.find(p => p.id === activeNotionPageId) || notionData[0];
             const mainHtml = `
                 <div class="notion-main">
-                    <div class="notion-cover"><div class="notion-icon-picker">${activePage.icon}</div></div>
+                    <div class="notion-meta">
+                        <span>PAGE_ID: ${activePage.id}</span>
+                        <span>STATUS: ACTIVE</span>
+                    </div>
                     <div class="notion-content-wrapper">
                         <input type="text" class="notion-title-input" value="${activePage.title}" placeholder="Untitled" oninput="updateNotionTitle(${activePage.id}, this.value)">
                         <div class="notion-toolbar">
@@ -817,7 +1179,7 @@
                             <button class="notion-tool-btn" onclick="formatNotion('formatBlock', 'H2')">H2</button>
                             <button class="notion-tool-btn" onclick="formatNotion('bold')">B</button>
                             <button class="notion-tool-btn" onclick="formatNotion('italic')">I</button>
-                            <button class="notion-tool-btn" onclick="formatNotion('insertUnorderedList')">• List</button>
+                            <button class="notion-tool-btn" onclick="formatNotion('insertUnorderedList')">LIST</button>
                         </div>
                         <div class="notion-editor" contenteditable="true" oninput="updateNotionContent(${activePage.id}, this.innerHTML)">${activePage.content}</div>
                     </div>
@@ -828,7 +1190,7 @@
 
         window.addNotionPage = function() {
             const newId = Date.now();
-            notionData.push({ id: newId, title: "Untitled Space", icon: "📄", content: "" });
+            notionData.push({ id: newId, title: "Untitled", icon: "XX", content: "" });
             activeNotionPageId = newId;
             renderNotion();
         }
@@ -850,30 +1212,29 @@
             const area = document.getElementById('projects-content');
             if (!area) return;
             let html = `<div class="tracker-header"><h3>Active Trackers</h3><p>Log your execution states.</p></div>
-                        <div class="app-input-row"><input type="text" id="new-proj-input" class="app-input" placeholder="New page track..."><button class="app-btn" onclick="addProject()">Add Track</button></div>`;
+                        <div class="app-input-row"><input type="text" id="new-proj-input" class="app-input" placeholder="New objective tracker..."><button class="app-btn" onclick="addProject()">Add Tracker</button></div>`;
             projectsData.forEach(p => {
                 const total = p.tasks.length, done = p.tasks.filter(t => t.done).length, pct = total === 0 ? 0 : (done/total)*100;
-                const ratioText = done + "/" + total;
+                const ratioText = done + "/" + total + " Complete";
                 html += `
                 <div class="proj-card">
-                    <div class="proj-title"><span>${p.name}</span><span style="font-size:13px;color:var(--os-accent);">${ratioText}</span></div>
+                    <div class="proj-tag">TRACKER // ${p.id.toString().slice(-4)}</div>
+                    <div class="proj-title"><span>${p.name}</span><span style="font-size:12px;color:var(--text-secondary);font-family:var(--font-mono);">${ratioText}</span></div>
                     <div class="proj-progress"><div class="proj-progress-bar" style="width: ${pct}%"></div></div>
                     <div class="task-list">
                 `;
                 p.tasks.forEach((t, i) => {
                     html += `
                     <div class="task-item ${t.done ? 'done' : ''}" onclick="toggleTask(${p.id}, ${i})">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div class="checkbox"></div>
-                            <span>${t.t}</span>
-                        </div>
-                        <span class="delete-task-btn" onclick="deleteTask(${p.id}, ${i}, event)" style="color: var(--text-secondary); cursor: pointer; font-size: 14px; padding: 0 4px; transition: color 0.2s;" onmouseover="this.style.color='var(--mac-red)'" onmouseout="this.style.color='var(--text-secondary)'">✕</span>
+                        <div class="checkbox"></div>
+                        <span style="flex:1;">${t.t}</span>
+                        <span class="delete-task-btn" onclick="deleteTask(${p.id}, ${i}, event)" style="color: var(--text-secondary); cursor: pointer; font-size: 14px; padding: 0 4px; transition: color 0.2s;" onmouseover="this.style.color='var(--os-accent-hot)'" onmouseout="this.style.color='var(--text-secondary)'">✕</span>
                     </div>`;
                 });
                 html += `
-                        <div class="app-input-row" style="margin-top:12px;margin-bottom:0;">
-                            <input type="text" id="new-task-${p.id}" class="app-input" style="padding:4px 8px;font-size:13px;" placeholder="Next step metrics...">
-                            <button class="app-btn" style="padding:4px 12px;font-size:13px;" onclick="addTask(${p.id}, event)">Add</button>
+                        <div class="app-input-row" style="margin-top:16px;">
+                            <input type="text" id="new-task-${p.id}" class="app-input" style="padding:10px 16px;font-size:14px;" placeholder="Add next sequence...">
+                            <button class="app-btn" style="padding:10px 24px;" onclick="addTask(${p.id}, event)">Add</button>
                         </div>
                     </div></div>`;
             });
@@ -905,12 +1266,7 @@
             }
         }
 
-        window.updateAuraCount = function(count) {
-            activeBlobs = parseInt(count);
-            document.getElementById('aura-count-val').innerText = count;
-        }
-
-        // --- Arcade Engine Core (Flappy Game) ---
+        // --- Arcade Engine Core (Flappy Glass) ---
         window.startFlappyGame = function() {
             const container = document.getElementById('flappy-container');
             if (!container) return;
@@ -936,7 +1292,7 @@
             const gameOver = () => { isPlaying = false; isGameOver = true; cancelAnimationFrame(window.flappyLoopId); msgEl.style.display = 'block'; };
 
             const createPipe = () => {
-                const gap = 140, minHeight = 40, maxPos = container.offsetHeight - minHeight - gap;
+                const gap = 160, minHeight = 40, maxPos = container.offsetHeight - minHeight - gap;
                 const topHeight = Math.floor(Math.random() * (maxPos - minHeight + 1) + minHeight);
                 const pipeTop = document.createElement('div');
                 pipeTop.className = 'flappy-pipe'; pipeTop.style.height = topHeight + 'px'; pipeTop.style.top = '0'; pipeTop.style.left = container.offsetWidth + 'px';
@@ -952,13 +1308,13 @@
                 if (birdY < 0 || birdY > container.offsetHeight - 24) { gameOver(); return; }
                 if (frameCount % 120 === 0) createPipe();
                 for (let i = 0; i < pipes.length; i++) {
-                    let p = pipes[i]; p.x -= 2.5; p.top.style.left = p.x + 'px'; p.bottom.style.left = p.x + 'px';
-                    const birdRect = { top: birdY, bottom: birdY + 24, left: 60, right: 84 };
+                    let p = pipes[i]; p.x -= 3; p.top.style.left = p.x + 'px'; p.bottom.style.left = p.x + 'px';
+                    const birdRect = { top: birdY, bottom: birdY + 24, left: 80, right: 104 };
                     const topRect = { top: 0, bottom: parseFloat(p.top.style.height), left: p.x, right: p.x + 60 };
                     const botRect = { top: container.offsetHeight - parseFloat(p.bottom.style.height), bottom: container.offsetHeight, left: p.x, right: p.x + 60 };
                     if ((birdRect.right > topRect.left && birdRect.left < topRect.right && birdRect.top < topRect.bottom) ||
                         (birdRect.right > botRect.left && birdRect.left < botRect.right && birdRect.bottom > botRect.top)) { gameOver(); return; }
-                    if (p.x + 60 < 60 && !p.passed) { p.passed = true; score++; scoreEl.innerText = score; }
+                    if (p.x + 60 < 80 && !p.passed) { p.passed = true; score++; scoreEl.innerText = score; }
                 }
                 if (pipes.length > 0 && pipes[0].x < -60) { pipes[0].top.remove(); pipes[0].bottom.remove(); pipes.shift(); }
                 frameCount++; window.flappyLoopId = requestAnimationFrame(gameLoop);
@@ -967,10 +1323,7 @@
 
         window.updateCSS = (varName, value) => {
             document.documentElement.style.setProperty(varName, value);
-            if (varName.includes('--blob-')) {
-                // Update internal array so animation picks it up immediately
-                initAuras(); 
-            }
+            if (varName.includes('--blob-')) { initAuras(); }
             if (varName === '--blob-1-color' && document.getElementById('bg-ascii-container').style.display !== 'flex') {
                 setOSAccent(value);
             }
@@ -1003,7 +1356,11 @@
             setOSAccent(getComputedStyle(document.documentElement).getPropertyValue('--blob-1-color').trim());
             updateClock();
             setInterval(updateClock, 1000);
+            
+            // Auto open the dashboard to show off the aesthetic immediately
             openApp('dashboard'); 
+            const cli = document.getElementById('spotlight-input');
+            if(cli) cli.focus();
         };
     </script>
 </body>
