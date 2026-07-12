@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yves.OS - Editorial</title>
+    <title>Yves.OS</title>
     
     <!-- Editorial Typography -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Epilogue:wght@500;700;900&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -82,7 +82,7 @@
             color: var(--os-accent);
         }
 
-        /* Top Bar - Editorial Marquee Style */
+        /* Top Bar - Editorial Style */
         .top-bar {
             height: 36px; width: 100%; position: absolute; top: 0; left: 0;
             display: flex; align-items: center; justify-content: space-between;
@@ -92,13 +92,6 @@
         }
 
         .top-bar-left, .top-bar-right { display: flex; align-items: center; gap: 20px; }
-
-        .marquee-container {
-            flex: 1; overflow: hidden; white-space: nowrap; margin: 0 24px;
-            color: var(--text-secondary); opacity: 0.7; font-size: 11px; letter-spacing: 1px;
-        }
-        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .menu-item { cursor: pointer; display: flex; align-items: center; gap: 8px; transition: color 0.15s ease; letter-spacing: 0.5px;}
         .menu-item:hover { color: var(--os-accent); }
@@ -367,8 +360,8 @@
     </div>
 
     <script>
-        let zIndex = 100;
-        const openWindows = {};
+        let topZIndex = 100;
+        let openWindows = {};
         window.flappyLoopId = null;
 
         // Mouse tracking for alive canvas
@@ -384,7 +377,7 @@
         }
 
         // Spotlight Search (CMD+K)
-        function toggleSpotlight() {
+        window.toggleSpotlight = function() {
             const spot = document.getElementById('spotlight-overlay');
             const inp = document.getElementById('spotlight-input');
             if (spot.style.display === 'none' || spot.style.display === '') {
@@ -394,7 +387,8 @@
             } else {
                 spot.style.display = 'none';
             }
-        }
+        };
+
         window.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
@@ -404,12 +398,17 @@
                 document.getElementById('spotlight-overlay').style.display = 'none';
             }
         });
+
         document.getElementById('spotlight-input').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const val = e.target.value.toLowerCase().trim();
                 const args = val.split(' ');
-                if (appRegistry[args[0]]) { openApp(args[0]); } 
-                else { handleCommand(val); }
+                if (appRegistry[args[0]]) { 
+                    openApp(args[0]); 
+                } else { 
+                    handleCommandRaw(val); 
+                    openApp('terminal');
+                }
                 document.getElementById('spotlight-overlay').style.display = 'none';
             }
         });
@@ -452,15 +451,14 @@
             
             if (blobCanvas) blobCanvas.style.opacity = '1';
             
+            if (!blobCanvas || !bctx) return;
             blobCanvas.width = window.innerWidth;
             blobCanvas.height = window.innerHeight;
-            if (bctx) bctx.clearRect(0, 0, blobCanvas.width, blobCanvas.height);
+            bctx.clearRect(0, 0, blobCanvas.width, blobCanvas.height);
             
             const style = getComputedStyle(document.documentElement);
-            if (bctx) {
-                bctx.filter = `blur(120px)`;
-                bctx.globalAlpha = 0.6;
-            }
+            bctx.filter = `blur(120px)`;
+            bctx.globalAlpha = 0.6;
             
             for (let i = 0; i < activeBlobs; i++) {
                 let aura = auras[i];
@@ -484,12 +482,10 @@
                     aura.y += (dy / dist) * 1.5;
                 }
                 
-                if (bctx) {
-                    bctx.beginPath();
-                    bctx.arc(aura.x, aura.y, aura.baseR, 0, Math.PI * 2);
-                    bctx.fillStyle = style.getPropertyValue(aura.colorVar).trim();
-                    bctx.fill();
-                }
+                bctx.beginPath();
+                bctx.arc(aura.x, aura.y, aura.baseR, 0, Math.PI * 2);
+                bctx.fillStyle = style.getPropertyValue(aura.colorVar).trim();
+                bctx.fill();
             }
         }
         animateCanvas();
@@ -519,37 +515,50 @@
             `;
             document.getElementById('window-layer').appendChild(sticky);
             
-            let isDown = false, sX = 0, sY = 0;
             const header = sticky.querySelector('.sticky-header');
-            header.onpointerdown = (ev) => {
-                isDown = true; sX = ev.clientX; sY = ev.clientY;
-                topZIndex++; sticky.style.zIndex = topZIndex;
-                document.onpointermove = (em) => {
+            
+            let isDown = false, sX = 0, sY = 0;
+            header.addEventListener('pointerdown', (ev) => {
+                isDown = true; 
+                sX = ev.clientX; 
+                sY = ev.clientY;
+                topZIndex++; 
+                sticky.style.zIndex = topZIndex;
+
+                const onMove = (em) => {
                     if(!isDown) return;
                     sticky.style.left = (sticky.offsetLeft - (sX - em.clientX)) + 'px';
                     sticky.style.top = (sticky.offsetTop - (sY - em.clientY)) + 'px';
-                    sX = em.clientX; sY = em.clientY;
+                    sX = em.clientX; 
+                    sY = em.clientY;
                 };
-                document.onpointerup = () => { isDown = false; document.onpointermove = null; };
-            };
+
+                const onUp = () => { 
+                    isDown = false; 
+                    document.removeEventListener('pointermove', onMove);
+                    document.removeEventListener('pointerup', onUp);
+                };
+
+                document.addEventListener('pointermove', onMove);
+                document.addEventListener('pointerup', onUp);
+            });
+
             setTimeout(() => sticky.querySelector('.sticky-content').focus(), 50);
         }
 
         // --- System UI Drag/Drop & Management Engines ---
         function makeDraggable(winEl, handleEl) {
             let startX = 0, startY = 0, currentX = 0, currentY = 0;
-            let isDragging = false;
-            handleEl.onpointerdown = (e) => {
+            
+            handleEl.addEventListener('pointerdown', (e) => {
                 if (winEl.classList.contains('maximized')) return; 
                 e.preventDefault(); 
                 focusWindow(winEl.id.replace('win-', ''));
                 startX = e.clientX; startY = e.clientY;
-                isDragging = true;
                 
                 winEl.classList.add('dragging');
 
-                document.onpointermove = (ev) => {
-                    if (!isDragging) return; 
+                const onMove = (ev) => {
                     ev.preventDefault(); 
                     currentX = startX - ev.clientX; currentY = startY - ev.clientY;
                     startX = ev.clientX; startY = ev.clientY;
@@ -557,20 +566,24 @@
                     let newTop = winEl.offsetTop - currentY, newLeft = winEl.offsetLeft - currentX;
                     if (newTop < 36) newTop = 36; // Prevent dragging behind top bar
                     
-                    winEl.style.top = newTop + "px"; winEl.style.left = newLeft + "px";
+                    winEl.style.top = newTop + "px"; 
+                    winEl.style.left = newLeft + "px";
 
                     // Kinetic skew effect based on velocity
                     let skewX = Math.min(Math.max(currentX * -0.3, -3), 3);
                     winEl.style.transform = `scale(1) skewX(${skewX}deg)`;
                 };
-                document.onpointerup = () => { 
-                    isDragging = false;
+
+                const onUp = () => { 
                     winEl.classList.remove('dragging');
                     winEl.style.transform = 'scale(1) skewX(0deg)';
-                    document.onpointermove = null; 
-                    document.onpointerup = null; 
+                    document.removeEventListener('pointermove', onMove);
+                    document.removeEventListener('pointerup', onUp);
                 };
-            };
+
+                document.addEventListener('pointermove', onMove);
+                document.addEventListener('pointerup', onUp);
+            });
         }
 
         window.toggleMaximize = function(appId) {
@@ -590,15 +603,11 @@
                 win.dataset.oldHeight = win.style.height;
 
                 win.classList.add('maximized');
-                win.style.top = '0px';
-                win.style.left = '0px';
-                win.style.width = '100vw';
-                win.style.height = 'calc(100vh - 72px)'; 
             }
             focusWindow(appId);
         }
 
-        function focusWindow(appId) {
+        window.focusWindow = function(appId) {
             const allWins = document.querySelectorAll('.window');
             allWins.forEach(w => w.classList.remove('focused'));
 
@@ -617,7 +626,8 @@
                 setTimeout(() => {
                     if(appId === 'flappy' && window.flappyLoopId) cancelAnimationFrame(window.flappyLoopId);
                     if(appId === 'focus') window.pausePomo();
-                    win.remove(); delete openWindows[appId];
+                    win.remove(); 
+                    delete openWindows[appId];
                     const dockItem = document.getElementById(`dock-${appId}`);
                     if(dockItem) dockItem.classList.remove('active');
                     
@@ -633,12 +643,10 @@
                 <div class="me-app">
                     <div class="me-meta-tag">PROFILE_DATA // V1.0</div>
                     <div class="me-details">
-                        <h1>Yves</h1>
-                        <p>Designer, developer, and builder of digital environments. Stripping away the generic to find the raw architecture underneath.</p>
+                        <h1>Kian George</h1>
+                        <p>Aspiring Engineer or a Phycist, enjoy a little coding here and there sometimes.</p>
                         <div class="stats-grid">
-                            <div class="stat-box"><span class="stat-val">34</span><span class="stat-lbl">Projects</span></div>
-                            <div class="stat-box"><span class="stat-val">2.1k</span><span class="stat-lbl">Commits</span></div>
-                            <div class="stat-box"><span class="stat-val">0</span><span class="stat-lbl">Blurs</span></div>
+                            <div class="stat-box"><span class="stat-val">11</span><span class="stat-lbl">Grade</span></div>
                         </div>
                     </div>
                 </div>`
@@ -656,7 +664,13 @@
                 </div>`
             },
             terminal: { name: 'Term', width: 600, height: 400, render: () => `
-                <div class="terminal-app" id="term-content"></div>`
+                <div class="terminal-app" onclick="document.getElementById('term-input')?.focus()">
+                    <div id="term-content"></div>
+                    <div class="term-input-line" style="display: flex; margin-top: 12px;">
+                        <span class="term-prompt">yves@admin:~$</span>
+                        <input type="text" id="term-input" autocomplete="off" spellcheck="false" onkeydown="window.handleTerminal(event)" style="background: transparent; border: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 14px; outline: none; flex: 1; caret-color: var(--os-accent);">
+                    </div>
+                </div>`
             },
             focus: { name: 'Timer', width: 400, height: 400, render: () => `
                 <div class="focus-app">
@@ -731,21 +745,17 @@
             if(dockItem) dockItem.classList.add('active');
 
             makeDraggable(win, win.querySelector('.window-header'));
-            win.onpointerdown = () => focusWindow(appId);
+            win.addEventListener('mousedown', () => focusWindow(appId));
             focusWindow(appId);
 
             // Init App Logic
-            if (appId === 'terminal') window.renderTerminal();
+            if (appId === 'terminal') window.handleCommandRaw('clear'); 
             if (appId === 'workspace') window.renderNotion();
             if (appId === 'projects') window.renderProjects();
-        }
+        };
 
-        // Data Models
-        let termHistory = [
-            "Yves.OS Terminal [Version 5.0.0]",
-            "Editorial Environment Active. Connections secure.",
-            "Type 'help' for executable binaries."
-        ];
+        // Data Models & Logic
+        let termHistory = [];
 
         let notionData = [
             { id: 1, title: "Manifesto", icon: "01", content: "<h1>Structure</h1><p>We tore down the soft blurs. We built solid borders.</p><ul><li>Dynamic reactive canvas strictly bounded</li><li>Kinetic drag physics</li></ul>" },
@@ -763,53 +773,14 @@
 
         let projectsData = [];
 
-        // Truncated, optimized ASCII text versions to fit seamlessly in generation tokens without hitting limits.
+        // Truncated ASCII text versions
         const asciiArtDB = {
-            david: `
-      :::::::::::
-    :::::::::::::::
-   :::           :::
-  :::             :::
-  :::  SANDEVISTAN :::
-   :::           :::
-    :::::::::::::::
-      :::::::::::
-            `,
-            lucy: `
-        .       * .
-    * .       *
-        .      MOON    .
-    .       * .
-        * .       *
-            `,
-            moon: `
-        _..._
-      .:::::::..
-     ::::::::::::
-     ::::::::::::
-     '::::::::::'
-       '::::::'
-            `,
-            house: `
-      +---------+
-      |  HOUSE  |
-      |   M.D.  |
-      +---------+
-            `,
-            redjohn: `
-         .-""""-.
-        /        \\
-       |  O   O   |
-       |    ^     |
-        \\  '='   /
-         '-....-'
-            `,
-            kanye: `
-        _  _
-       | || |
-       | || |
-       |____|
-            `
+            david: "      :::::::::::\n    :::::::::::::::\n   :::           :::\n  :::             :::\n  :::  SANDEVISTAN :::\n   :::           :::\n    :::::::::::::::\n      :::::::::::",
+            lucy: "        .       * .\n    * .       *\n        .      MOON    .\n    .       * .\n        * .       *",
+            moon: "        _..._\n      .:::::::..\n     ::::::::::::\n     ::::::::::::\n     '::::::::::'\n       '::::::'",
+            house: "      +---------+\n      |  HOUSE  |\n      |   M.D.  |\n      +---------+",
+            redjohn: "         .-\"\"\"\"-.\n        /        \\\n       |  O   O   |\n       |    ^     |\n        \\  '='   /\n         '-....-'",
+            kanye: "        _  _\n       | || |\n       | || |\n       |____|"
         };
 
         window.setAsciiBackground = function(type) {
@@ -1015,6 +986,114 @@
             }
         };
 
+        window.toggleBg = function() {
+            window.isBgEnabled = !window.isBgEnabled;
+            const btn = document.getElementById('toggle-bg-btn');
+            if(btn) btn.innerText = window.isBgEnabled ? 'ON' : 'OFF';
+        };
+
+        window.renderTerminal = function() {
+            const termArea = document.getElementById('term-content');
+            if (termArea) {
+                termArea.innerHTML = termHistory.map(line => `<div class="term-line">${line}</div>`).join('');
+                const appContainer = termArea.closest('.terminal-app');
+                if (appContainer) appContainer.scrollTop = appContainer.scrollHeight;
+            }
+        };
+
+        window.handleTerminal = function(e) {
+            if(e.key === 'Enter') {
+                window.handleCommandRaw(e.target.value);
+                e.target.value = '';
+            }
+        };
+        
+        window.handleCommandRaw = function(cmdRaw) {
+            if(!cmdRaw.trim()) return;
+            const cmd = cmdRaw.toLowerCase().trim();
+            
+            if (cmd !== 'clear') {
+                termHistory.push(`<span class="term-prompt">yves@admin:~$</span> ${cmdRaw}`);
+            }
+            
+            let output = "";
+            if (cmd === 'help') {
+                output = "Binaries: clear, date, open [app], resetbg<br>ASCII Targets: david, lucy, moon, house, redjohn, kanye";
+            } else if (cmd === 'clear') {
+                termHistory = [
+                    "Yves.OS Terminal [Version 5.0.0]",
+                    "Editorial Environment Active. Connections secure.",
+                    "Type 'help' for executable binaries."
+                ];
+                window.renderTerminal();
+                return;
+            } else if (cmd === 'date') {
+                output = new Date().toString();
+            } else if (cmd.startsWith('open ')) {
+                let target = cmd.split(' ')[1];
+                if(appRegistry[target]) { openApp(target); output = `Launched ${target}.exe`; }
+                else output = `Error: ${target} not found.`;
+            } else if (['david','lucy','moon','house','redjohn','kanye'].includes(cmd)) {
+                window.setAsciiBackground(cmd);
+                output = `ASCII overlay applied: ${cmd.toUpperCase()}`;
+            } else if (cmd === 'resetbg') {
+                window.setAsciiBackground(null);
+                output = `Canvas blob physics restored.`;
+            } else {
+                output = `zsh: command not found: ${cmd}`;
+            }
+            
+            termHistory.push(output);
+            window.renderTerminal();
+        };
+
+        // --- Pomodoro Management Engine ---
+        window.togglePomo = function() {
+            if (pomoIsRunning) {
+                clearInterval(pomoInterval);
+                document.getElementById('pomo-start-btn').innerText = 'Start';
+            } else {
+                document.getElementById('pomo-start-btn').innerText = 'Pause';
+                pomoInterval = setInterval(() => {
+                    if (pomoSeconds === 0) {
+                        if (pomoMinutes === 0) {
+                            pomoMode = pomoMode === 'Work' ? 'Break' : 'Work';
+                            pomoMinutes = pomoMode === 'Work' ? 25 : 5;
+                            document.getElementById('pomo-status-text').innerText = pomoMode === 'Work' ? 'WORK BLOCK' : 'BREAK BLOCK';
+                        } else {
+                            pomoMinutes--; pomoSeconds = 59;
+                        }
+                    } else {
+                        pomoSeconds--;
+                    }
+                    displayPomo();
+                }, 1000);
+            }
+            pomoIsRunning = !pomoIsRunning;
+        }
+
+        window.resetPomo = function(mins = 25) {
+            clearInterval(pomoInterval);
+            pomoIsRunning = false;
+            pomoMode = mins === 25 ? 'Work' : 'Break';
+            pomoMinutes = mins; pomoSeconds = 0;
+            const startBtn = document.getElementById('pomo-start-btn');
+            if(startBtn) startBtn.innerText = 'Start';
+            document.getElementById('pomo-status-text').innerText = pomoMode === 'Work' ? 'WORK BLOCK' : 'BREAK BLOCK';
+            displayPomo();
+        }
+
+        window.pausePomo = function() {
+            if (pomoIsRunning) window.togglePomo();
+        }
+
+        function displayPomo() {
+            const timeEl = document.getElementById('pomo-display');
+            if (timeEl) {
+                timeEl.innerText = `${String(pomoMinutes).padStart(2,'0')}:${String(pomoSeconds).padStart(2,'0')}`;
+            }
+        }
+
         function updateClock() {
             const now = new Date();
             const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -1033,14 +1112,6 @@
             
             const bgDate = document.getElementById('bg-date');
             if(bgDate) bgDate.textContent = `${fullDays[now.getDay()]}, ${months[now.getMonth()]} ${String(now.getDate()).padStart(2,'0')}`;
-            
-            const dashHeader = document.querySelector('.dash-header h1');
-            if(dashHeader) {
-                let currentH = now.getHours();
-                if(currentH < 12) dashHeader.textContent = "Good Morning.";
-                else if(currentH < 18) dashHeader.textContent = "Good Afternoon.";
-                else dashHeader.textContent = "Good Evening.";
-            }
         }
 
         window.onload = () => {
@@ -1050,8 +1121,6 @@
             
             // Auto open the dashboard to show off the aesthetic immediately
             openApp('dashboard'); 
-            const cli = document.getElementById('spotlight-input');
-            if(cli) cli.focus();
         };
     </script>
 </body>
